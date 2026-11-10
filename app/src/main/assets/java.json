@@ -1,0 +1,149 @@
+{
+ "name": "Java",
+ "levels": [
+  {
+   "title": "Nivel 1 · Lo básico",
+   "description": "La estructura de un programa, mostrar texto, variables y entrada.",
+   "sections": [
+    {
+     "title": "Estructura de un programa",
+     "text": "Todo en Java vive dentro de una clase. El programa arranca en el método `main`. El archivo debe llamarse igual que la clase: `Main.java`.\n\nCada instrucción termina con `;` y los bloques van entre llaves `{ }`.",
+     "examples": [
+      "$ cat Main.java\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hola, mundo\");\n    }\n}\n$ javac Main.java\n$ java Main\nHola, mundo"
+     ],
+     "note": "`public class Main` es la clase. `public static void main(String[] args)` es el punto de entrada y siempre se escribe igual."
+    },
+    {
+     "title": "System.out.println",
+     "text": "`System.out.println()` muestra texto y salta de línea. `System.out.print()` muestra sin saltar.\n\nPara unir texto con valores usa `+`. El texto va con comillas dobles; las comillas simples son solo para un carácter.",
+     "examples": [
+      "$ cat Main.java\npublic class Main {\n    public static void main(String[] args) {\n        System.out.print(\"Hola \");\n        System.out.println(\"Ana\");\n        System.out.println(\"Edad: \" + 12);\n        System.out.println(2 + 3);\n    }\n}\n$ javac Main.java\n$ java Main\nHola Ana\nEdad: 12\n5"
+     ]
+    },
+    {
+     "title": "Comentarios",
+     "text": "`//` comenta una línea. `/* ... */` comenta varias líneas. Java los ignora al compilar.",
+     "examples": [
+      "$ cat Main.java\npublic class Main {\n    public static void main(String[] args) {\n        // comentario de una línea\n        /* comentario\n           de varias líneas */\n        System.out.println(\"Hola\");\n    }\n}\n$ javac Main.java\n$ java Main\nHola"
+     ]
+    },
+    {
+     "title": "Variables y tipos",
+     "text": "En Java debes declarar el tipo de cada variable. Los básicos son `int` (entero), `double` (decimal), `boolean` (`true` o `false`), `char` (un carácter, con comillas simples) y `String` (texto, con S mayúscula).\n\nUna vez declarada, la variable no puede cambiar de tipo.",
+     "examples": [
+      "$ cat Main.java\npublic class Main {\n    public static void main(String[] args) {\n        String nombre = \"Ana\";\n        int edad = 12;\n        double altura = 1.45;\n        boolean estudia = true;\n        char letra = 'A';\n        System.out.println(nombre + \" \" + edad);\n        System.out.println(altura);\n        System.out.println(estudia);\n        System.out.println(letra);\n    }\n}\n$ javac Main.java\n$ java Main\nAna 12\n1.45\ntrue\nA"
+     ]
+    },
+    {
+     "title": "Scanner (entrada)",
+     "text": "Para leer lo que escribe el usuario se usa `Scanner`. Hay que importarlo arriba con `import java.util.Scanner;`.\n\n`nextLine()` lee una línea de texto, `nextInt()` un entero y `nextDouble()` un decimal.",
+     "examples": [
+      "$ cat Main.java\nimport java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"¿Cómo te llamas? \");\n        String nombre = sc.nextLine();\n        System.out.print(\"¿Cuántos años tienes? \");\n        int edad = sc.nextInt();\n        System.out.println(\"Hola \" + nombre + \", el año que viene tendrás \" + (edad + 1));\n        sc.close();\n    }\n}\n$ javac Main.java\n$ java Main\n¿Cómo te llamas? Ana\n¿Cuántos años tienes? 12\nHola Ana, el año que viene tendrás 13"
+     ],
+     "note": "Si usas `nextInt()` y después `nextLine()`, este último lee el Enter que quedó pendiente. Agrega un `sc.nextLine();` en el medio para limpiarlo."
+    }
+   ]
+  },
+  {
+   "title": "Nivel 2 · Decisiones y repeticiones",
+   "description": "Hacer que el programa elija y repita.",
+   "sections": [
+    {
+     "title": "Operadores",
+     "text": "Aritméticos: `+ - * / %`. Con dos `int`, el `/` hace división entera (`7 / 2` da 3).\n\nComparación: `== != < > <= >=`. Lógicos: `&&` (y), `||` (o), `!` (no).",
+     "examples": [
+      "$ cat Main.java\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println(7 / 2);\n        System.out.println(7 / 2.0);\n        System.out.println(7 % 2);\n        System.out.println(5 > 3 && 2 == 2);\n        String a = \"hola\";\n        System.out.println(a.equals(\"hola\"));\n    }\n}\n$ javac Main.java\n$ java Main\n3\n3.5\n1\ntrue\ntrue"
+     ],
+     "note": "Para comparar textos no uses `==`. Usa `.equals()`."
+    },
+    {
+     "title": "if / else if / else",
+     "text": "La condición va entre paréntesis y el bloque entre llaves. Se pueden encadenar con `else if` y cerrar con `else`.\n\nSi el bloque tiene una sola línea las llaves son opcionales, pero conviene ponerlas siempre.",
+     "examples": [
+      "$ cat Main.java\npublic class Main {\n    public static void main(String[] args) {\n        int nota = 7;\n        if (nota >= 9) {\n            System.out.println(\"Excelente\");\n        } else if (nota >= 6) {\n            System.out.println(\"Aprobado\");\n        } else {\n            System.out.println(\"A recuperar\");\n        }\n    }\n}\n$ javac Main.java\n$ java Main\nAprobado"
+     ]
+    },
+    {
+     "title": "while",
+     "text": "Repite un bloque mientras la condición sea verdadera. `n--` resta 1 a `n` (y `n++` suma 1).\n\nSi la condición nunca se vuelve falsa, el programa queda en bucle infinito. En la terminal lo cortas con Ctrl + C.",
+     "examples": [
+      "$ cat Main.java\npublic class Main {\n    public static void main(String[] args) {\n        int n = 3;\n        while (n > 0) {\n            System.out.println(\"Cuenta: \" + n);\n            n--;\n        }\n        System.out.println(\"¡Listo!\");\n    }\n}\n$ javac Main.java\n$ java Main\nCuenta: 3\nCuenta: 2\nCuenta: 1\n¡Listo!"
+     ]
+    },
+    {
+     "title": "for",
+     "text": "El `for` tiene tres partes separadas por `;`: dónde empieza, hasta cuándo sigue y cómo avanza.",
+     "examples": [
+      "$ cat Main.java\npublic class Main {\n    public static void main(String[] args) {\n        for (int i = 0; i < 3; i++) {\n            System.out.println(\"Vuelta \" + i);\n        }\n    }\n}\n$ javac Main.java\n$ java Main\nVuelta 0\nVuelta 1\nVuelta 2"
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Nivel 3 · Estructuras y métodos",
+   "description": "Guardar varios datos, reutilizar código y manejar errores.",
+   "sections": [
+    {
+     "title": "Arrays",
+     "text": "Un array tiene tamaño fijo y guarda un solo tipo de dato. Se accede por posición, empezando desde 0.\n\n`length` (sin paréntesis) da el tamaño.",
+     "examples": [
+      "$ cat Main.java\npublic class Main {\n    public static void main(String[] args) {\n        int[] numeros = {10, 20, 30};\n        System.out.println(numeros[0]);\n        System.out.println(numeros.length);\n        for (int i = 0; i < numeros.length; i++) {\n            System.out.println(numeros[i]);\n        }\n    }\n}\n$ javac Main.java\n$ java Main\n10\n3\n10\n20\n30"
+     ]
+    },
+    {
+     "title": "Métodos",
+     "text": "Un método es un bloque reutilizable. Se declara con el tipo que devuelve, el nombre y los parámetros. `void` significa que no devuelve nada.\n\nLos que llamas directo desde `main` llevan `static`.",
+     "examples": [
+      "$ cat Main.java\npublic class Main {\n    static int sumar(int a, int b) {\n        return a + b;\n    }\n\n    static void saludar(String nombre) {\n        System.out.println(\"Hola \" + nombre);\n    }\n\n    public static void main(String[] args) {\n        saludar(\"Ana\");\n        System.out.println(sumar(4, 5));\n    }\n}\n$ javac Main.java\n$ java Main\nHola Ana\n9"
+     ]
+    },
+    {
+     "title": "ArrayList",
+     "text": "Es como un array pero puede crecer y achicarse. Se importa de `java.util`. El tipo de los elementos va entre `< >` y con su clase (`String`, `Integer`...).\n\nUsas `add()` para agregar, `get()` para leer por posición y `size()` para contar.",
+     "examples": [
+      "$ cat Main.java\nimport java.util.ArrayList;\n\npublic class Main {\n    public static void main(String[] args) {\n        ArrayList<String> frutas = new ArrayList<>();\n        frutas.add(\"manzana\");\n        frutas.add(\"pera\");\n        System.out.println(frutas);\n        System.out.println(frutas.get(0));\n        System.out.println(frutas.size());\n    }\n}\n$ javac Main.java\n$ java Main\n[manzana, pera]\nmanzana\n2"
+     ]
+    },
+    {
+     "title": "try / catch",
+     "text": "Sirve para atrapar errores sin que el programa se caiga. El código que puede fallar va en `try` y lo que hay que hacer si falla va en `catch`.",
+     "examples": [
+      "$ cat Main.java\npublic class Main {\n    public static void main(String[] args) {\n        try {\n            int n = Integer.parseInt(\"abc\");\n            System.out.println(n);\n        } catch (NumberFormatException e) {\n            System.out.println(\"Eso no es un número\");\n        }\n        System.out.println(\"Sigo funcionando\");\n    }\n}\n$ javac Main.java\n$ java Main\nEso no es un número\nSigo funcionando"
+     ]
+    }
+   ]
+  }
+ ],
+ "guides": [
+  {
+   "title": "Instalar Java en Termux",
+   "text": "En Termux el JDK se instala con `pkg`. Incluye `javac` (el compilador) y `java` (el que ejecuta).\n\nInstala también `nano` si quieres un editor dentro de la terminal.",
+   "examples": [
+    "$ pkg update && pkg upgrade\n$ pkg install openjdk-17\n$ javac -version\njavac 17.0.13"
+   ],
+   "note": "El número de versión puede ser distinto según cuándo lo instales."
+  },
+  {
+   "title": "Compilar y correr un archivo",
+   "text": "Java se hace en dos pasos. Primero `javac` compila el `.java` y genera un `.class`. Después `java` ejecuta la clase, sin escribir la extensión.\n\nEl archivo debe llamarse igual que la clase pública: `Main.java`. Si cambias el código, vuelve a compilar.",
+   "examples": [
+    "$ nano Main.java\n$ javac Main.java\n$ ls\nMain.class  Main.java\n$ java Main\nHola, mundo"
+   ],
+   "note": "Atajo: `java Main.java` compila y corre en un solo paso (Java 11 o superior)."
+  },
+  {
+   "title": "Llaves y punto y coma",
+   "text": "• Cada instrucción termina con `;`. Si falta, el compilador marca error.\n• Las llaves `{ }` abren y cierran bloques: clase, método, `if`, `for`... Cada `{` necesita su `}`.\n• La sangría no es obligatoria, pero ayuda a leer el código.\n• Después del `)` de un `if`, `for` o `while` no va `;`.",
+   "examples": [
+    "$ cat Main.java\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hola\")\n    }\n}\n$ javac Main.java\nMain.java:3: error: ';' expected\n        System.out.println(\"Hola\")\n                                  ^\n1 error"
+   ]
+  },
+  {
+   "title": "El inicio de un programa",
+   "text": "Todo programa empieza en `public static void main(String[] args)`.\n\n• `public`: visible desde afuera.\n• `static`: se puede usar sin crear un objeto.\n• `void`: no devuelve nada.\n• `main`: nombre fijo, Java lo busca para arrancar.\n• `String[] args`: datos que se le pasan desde la terminal.\n\nJava distingue mayúsculas: `String` y `System` empiezan con mayúscula.",
+   "examples": [
+    "$ cat Hola.java\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hola\");\n    }\n}\n$ javac Hola.java\nHola.java:1: error: class Main is public, should be declared in a file named Main.java\npublic class Main {\n       ^\n1 error"
+   ]
+  }
+ ]
+}

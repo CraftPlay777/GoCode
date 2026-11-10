@@ -1,0 +1,149 @@
+{
+ "name": "Python",
+ "levels": [
+  {
+   "title": "Nivel 1 · Lo básico",
+   "description": "Mostrar texto, guardar datos y pedirle cosas al usuario.",
+   "sections": [
+    {
+     "title": "print",
+     "text": "`print()` muestra algo en pantalla. Lo que quieras mostrar va entre paréntesis. Si es texto, va entre comillas (simples o dobles).\n\nPuedes poner varios valores separados por coma y Python los separa con un espacio. Cada `print` termina con un salto de línea.",
+     "examples": [
+      "$ cat hola.py\nprint(\"Hola, mundo\")\nprint(\"Edad:\", 12)\nprint(2 + 3)\n$ python hola.py\nHola, mundo\nEdad: 12\n5"
+     ]
+    },
+    {
+     "title": "Comentarios",
+     "text": "Un comentario es texto que Python ignora. Empieza con `#` y llega hasta el final de la línea. Sirve para explicar tu código o para desactivar una línea sin borrarla.",
+     "examples": [
+      "$ cat hola.py\n# Esto es un comentario\nprint(\"Hola\")  # esto también\n$ python hola.py\nHola"
+     ]
+    },
+    {
+     "title": "Variables",
+     "text": "Una variable guarda un valor con un nombre. Se crea con `=` y no hace falta declarar el tipo.\n\nEl nombre no puede empezar con número ni tener espacios. Lo normal es usar minúsculas y guion bajo, como `mi_edad`. Puedes cambiar el valor cuando quieras.",
+     "examples": [
+      "$ cat hola.py\nnombre = \"Ana\"\nedad = 12\nprint(nombre, edad)\nedad = edad + 1\nprint(edad)\n$ python hola.py\nAna 12\n13"
+     ]
+    },
+    {
+     "title": "Tipos de datos",
+     "text": "Los tipos básicos son `int` (enteros), `float` (decimales, con punto), `str` (texto) y `bool` (`True` o `False`, con la inicial en mayúscula).\n\nCon `type()` ves de qué tipo es un valor.",
+     "examples": [
+      "$ cat hola.py\nprint(type(7))\nprint(type(3.14))\nprint(type(\"hola\"))\nprint(type(True))\n$ python hola.py\n<class 'int'>\n<class 'float'>\n<class 'str'>\n<class 'bool'>"
+     ]
+    },
+    {
+     "title": "input",
+     "text": "`input()` pausa el programa y espera a que el usuario escriba algo y presione Enter. Lo que escribe se guarda como texto.\n\nSi necesitas un número, conviértelo con `int()` o `float()`.",
+     "examples": [
+      "$ cat hola.py\nnombre = input(\"¿Cómo te llamas? \")\nedad = int(input(\"¿Cuántos años tienes? \"))\nprint(\"Hola\", nombre)\nprint(\"El año que viene tendrás\", edad + 1)\n$ python hola.py\n¿Cómo te llamas? Ana\n¿Cuántos años tienes? 12\nHola Ana\nEl año que viene tendrás 13"
+     ],
+     "note": "`input()` siempre devuelve texto. Si el usuario escribe letras y tú usas `int()`, Python da un `ValueError`."
+    }
+   ]
+  },
+  {
+   "title": "Nivel 2 · Decisiones y repeticiones",
+   "description": "Hacer que el programa elija y repita.",
+   "sections": [
+    {
+     "title": "Operadores",
+     "text": "Aritméticos: `+ - * /`, y también `//` (división entera), `%` (resto) y `**` (potencia). El `/` siempre da decimal.\n\nComparación: `== != < > <= >=` dan `True` o `False`. Lógicos: `and`, `or`, `not`.",
+     "examples": [
+      "$ cat hola.py\nprint(7 / 2)\nprint(7 // 2)\nprint(7 % 2)\nprint(2 ** 3)\nprint(5 > 3 and 2 == 2)\n$ python hola.py\n3.5\n3\n1\n8\nTrue"
+     ]
+    },
+    {
+     "title": "if / elif / else",
+     "text": "Ejecuta un bloque solo si se cumple una condición. La línea termina con `:` y el bloque va con sangría (indentado).\n\n`elif` es \"si no, y si...\" y `else` es \"en cualquier otro caso\".",
+     "examples": [
+      "$ cat hola.py\nnota = 7\nif nota >= 9:\n    print(\"Excelente\")\nelif nota >= 6:\n    print(\"Aprobado\")\nelse:\n    print(\"A recuperar\")\n$ python hola.py\nAprobado"
+     ],
+     "note": "Un solo `=` guarda un valor. Dos `==` comparan."
+    },
+    {
+     "title": "while",
+     "text": "Repite un bloque mientras la condición sea verdadera. Asegúrate de que algo cambie dentro del bucle; si no, nunca termina.\n\nSi se queda en un bucle infinito, en la terminal lo cortas con Ctrl + C.",
+     "examples": [
+      "$ cat hola.py\nn = 3\nwhile n > 0:\n    print(\"Cuenta:\", n)\n    n = n - 1\nprint(\"¡Listo!\")\n$ python hola.py\nCuenta: 3\nCuenta: 2\nCuenta: 1\n¡Listo!"
+     ]
+    },
+    {
+     "title": "for y range",
+     "text": "`for` recorre una secuencia. `range(n)` genera los números de 0 a n-1.\n\nTambién existe `range(inicio, fin)` (el fin no se incluye) y `range(inicio, fin, paso)`.",
+     "examples": [
+      "$ cat hola.py\nfor i in range(3):\n    print(\"Vuelta\", i)\nfor j in range(2, 10, 3):\n    print(j)\n$ python hola.py\nVuelta 0\nVuelta 1\nVuelta 2\n2\n5\n8"
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Nivel 3 · Estructuras y funciones",
+   "description": "Guardar varios datos, reutilizar código y manejar errores.",
+   "sections": [
+    {
+     "title": "Listas",
+     "text": "Una lista guarda varios valores en orden, entre corchetes. Se accede por posición, empezando desde 0.\n\nAlgunos básicos: `append()` agrega al final, `len()` cuenta los elementos y `remove()` quita un valor.",
+     "examples": [
+      "$ cat hola.py\nfrutas = [\"manzana\", \"pera\"]\nfrutas.append(\"uva\")\nprint(frutas)\nprint(frutas[0])\nprint(len(frutas))\nfor f in frutas:\n    print(\"-\", f)\n$ python hola.py\n['manzana', 'pera', 'uva']\nmanzana\n3\n- manzana\n- pera\n- uva"
+     ]
+    },
+    {
+     "title": "Diccionarios",
+     "text": "Guardan pares `clave: valor`, entre llaves. En vez de buscar por posición, buscas por clave.\n\nSi asignas a una clave nueva, se agrega.",
+     "examples": [
+      "$ cat hola.py\nalumno = {\"nombre\": \"Ana\", \"edad\": 12}\nprint(alumno[\"nombre\"])\nalumno[\"grado\"] = 6\nprint(alumno)\n$ python hola.py\nAna\n{'nombre': 'Ana', 'edad': 12, 'grado': 6}"
+     ]
+    },
+    {
+     "title": "Funciones",
+     "text": "Una función es un bloque con nombre que puedes reutilizar. Se define con `def`, puede recibir parámetros y devolver un valor con `return`.\n\nTiene que estar definida antes de llamarla.",
+     "examples": [
+      "$ cat hola.py\ndef sumar(a, b):\n    return a + b\n\nresultado = sumar(4, 5)\nprint(resultado)\nprint(sumar(10, 1))\n$ python hola.py\n9\n11"
+     ]
+    },
+    {
+     "title": "try / except",
+     "text": "Sirve para atrapar errores sin que el programa se caiga. El código que puede fallar va en `try` y lo que hay que hacer si falla va en `except`.",
+     "examples": [
+      "$ cat hola.py\ntry:\n    n = int(\"abc\")\n    print(n)\nexcept ValueError:\n    print(\"Eso no es un número\")\nprint(\"Sigo funcionando\")\n$ python hola.py\nEso no es un número\nSigo funcionando"
+     ]
+    }
+   ]
+  }
+ ],
+ "guides": [
+  {
+   "title": "Instalar Python en Termux",
+   "text": "Termux instala programas con `pkg`. Primero actualiza los paquetes y luego instala Python. Para comprobar que quedó bien, pide la versión.\n\nCon Python también se instala `pip`, que sirve para agregar librerías.",
+   "examples": [
+    "$ pkg update && pkg upgrade\n$ pkg install python\n$ python --version\nPython 3.12.7"
+   ],
+   "note": "El número de versión puede ser distinto según cuándo lo instales."
+  },
+  {
+   "title": "Crear y correr un archivo",
+   "text": "Crea el archivo con un editor. `nano` es simple: instálalo con `pkg install nano` y ábrelo con `nano hola.py`. Escribes tu código, guardas con Ctrl + O y Enter, y sales con Ctrl + X.\n\nPara correrlo escribe `python` y el nombre del archivo. Debes estar en la carpeta donde está: `ls` muestra los archivos y `cd` te mueve de carpeta.",
+   "examples": [
+    "$ cd ~\n$ nano hola.py",
+    "$ ls\nhola.py\n$ python hola.py\nHola, mundo"
+   ],
+   "note": "Si cambias el código, guarda y vuelve a correr el comando. En Python no hace falta compilar."
+  },
+  {
+   "title": "Sangría (tabulaciones)",
+   "text": "En Python la sangría no es decoración: define qué código pertenece a cada bloque. Después de una línea que termina en `:` (`if`, `for`, `while`, `def`...), las líneas siguientes deben llevar la misma sangría. Lo habitual es usar 4 espacios.\n\nNo mezcles tabulaciones con espacios en el mismo archivo, porque da `TabError`. Elige 4 espacios y úsalos siempre.",
+   "examples": [
+    "$ cat mal.py\nif 5 > 3:\nprint(\"hola\")\n$ python mal.py\n  File \"/data/data/com.termux/files/home/mal.py\", line 2\n    print(\"hola\")\n    ^\nIndentationError: expected an indented block after 'if' statement on line 1"
+   ]
+  },
+  {
+   "title": "Cosas a tener en cuenta",
+   "text": "• No usa `;` ni llaves `{}` para los bloques (las llaves son para diccionarios).\n• Importan las mayúsculas: `Print` no es `print`.\n• Los dos puntos `:` al final de `if`, `for`, `while` y `def` son obligatorios.\n• Los comentarios empiezan con `#`.\n• Python corre el archivo de arriba hacia abajo, línea por línea.",
+   "examples": [
+    "$ cat error.py\nPrint(\"hola\")\n$ python error.py\nTraceback (most recent call last):\n  File \"/data/data/com.termux/files/home/error.py\", line 1, in <module>\n    Print(\"hola\")\n    ^^^^^\nNameError: name 'Print' is not defined. Did you mean: 'print'?"
+   ]
+  }
+ ]
+}

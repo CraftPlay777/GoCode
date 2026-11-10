@@ -1,0 +1,149 @@
+{
+ "name": "C++",
+ "levels": [
+  {
+   "title": "Nivel 1 · Lo básico",
+   "description": "La estructura de un programa, mostrar texto, variables y entrada.",
+   "sections": [
+    {
+     "title": "Estructura de un programa",
+     "text": "Un programa en C++ empieza en la función `main`. Arriba se incluyen librerías con `#include`: `iostream` da la entrada y salida por pantalla.\n\n`using namespace std;` evita escribir `std::` delante de `cout`. `return 0;` indica que el programa terminó bien.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << \"Hola, mundo\" << endl;\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\nHola, mundo"
+     ],
+     "note": "C++ se compila antes de correr: primero `clang++` genera el ejecutable y luego lo ejecutas con `./hola`."
+    },
+    {
+     "title": "cout",
+     "text": "`cout << algo` muestra en pantalla. Se pueden encadenar varios valores con `<<`.\n\n`endl` (o `\"\\n\"`) salta de línea. El texto va con comillas dobles.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << \"Hola \";\n    cout << \"Ana\" << endl;\n    cout << \"Edad: \" << 12 << endl;\n    cout << 2 + 3 << \"\\n\";\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\nHola Ana\nEdad: 12\n5"
+     ]
+    },
+    {
+     "title": "Comentarios",
+     "text": "`//` comenta una línea. `/* ... */` comenta varias líneas. El compilador los ignora.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\nusing namespace std;\n\nint main() {\n    // comentario de una línea\n    /* comentario\n       de varias líneas */\n    cout << \"Hola\" << endl;\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\nHola"
+     ]
+    },
+    {
+     "title": "Variables y tipos",
+     "text": "En C++ debes declarar el tipo de cada variable. Los básicos son `int` (entero), `double` (decimal), `bool` (`true` o `false`), `char` (un carácter, con comillas simples) y `string` (texto; requiere `#include <string>`).",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\n#include <string>\nusing namespace std;\n\nint main() {\n    string nombre = \"Ana\";\n    int edad = 12;\n    double altura = 1.45;\n    bool estudia = true;\n    char letra = 'A';\n    cout << nombre << \" \" << edad << endl;\n    cout << altura << endl;\n    cout << estudia << endl;\n    cout << letra << endl;\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\nAna 12\n1.45\n1\nA"
+     ],
+     "note": "`cout` muestra `true` como `1` y `false` como `0`."
+    },
+    {
+     "title": "cin (entrada)",
+     "text": "`cin >> variable` lee lo que escribe el usuario y lo guarda en la variable. Las flechas apuntan hacia la variable.\n\n`cin >> nombre` lee solo hasta el primer espacio. Para leer una línea completa usa `getline(cin, nombre)`.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\n#include <string>\nusing namespace std;\n\nint main() {\n    string nombre;\n    int edad;\n    cout << \"¿Cómo te llamas? \";\n    cin >> nombre;\n    cout << \"¿Cuántos años tienes? \";\n    cin >> edad;\n    cout << \"Hola \" << nombre << \", el año que viene tendrás \" << edad + 1 << endl;\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\n¿Cómo te llamas? Ana\n¿Cuántos años tienes? 12\nHola Ana, el año que viene tendrás 13"
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Nivel 2 · Decisiones y repeticiones",
+   "description": "Hacer que el programa elija y repita.",
+   "sections": [
+    {
+     "title": "Operadores",
+     "text": "Aritméticos: `+ - * / %`. Con dos `int`, el `/` hace división entera (`7 / 2` da 3).\n\nComparación: `== != < > <= >=`. Lógicos: `&&` (y), `||` (o), `!` (no).",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << 7 / 2 << endl;\n    cout << 7 / 2.0 << endl;\n    cout << 7 % 2 << endl;\n    cout << (5 > 3 && 2 == 2) << endl;\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\n3\n3.5\n1\n1"
+     ],
+     "note": "Una comparación verdadera se muestra como `1` y una falsa como `0`."
+    },
+    {
+     "title": "if / else if / else",
+     "text": "La condición va entre paréntesis y el bloque entre llaves. Puedes encadenar con `else if` y cerrar con `else`.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\nusing namespace std;\n\nint main() {\n    int nota = 7;\n    if (nota >= 9) {\n        cout << \"Excelente\" << endl;\n    } else if (nota >= 6) {\n        cout << \"Aprobado\" << endl;\n    } else {\n        cout << \"A recuperar\" << endl;\n    }\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\nAprobado"
+     ]
+    },
+    {
+     "title": "while",
+     "text": "Repite un bloque mientras la condición sea verdadera. `n--` resta 1 a `n` (y `n++` suma 1).\n\nSi la condición nunca se vuelve falsa, el programa queda en bucle infinito. Lo cortas con Ctrl + C.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\nusing namespace std;\n\nint main() {\n    int n = 3;\n    while (n > 0) {\n        cout << \"Cuenta: \" << n << endl;\n        n--;\n    }\n    cout << \"¡Listo!\" << endl;\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\nCuenta: 3\nCuenta: 2\nCuenta: 1\n¡Listo!"
+     ]
+    },
+    {
+     "title": "for",
+     "text": "El `for` tiene tres partes separadas por `;`: dónde empieza, hasta cuándo sigue y cómo avanza.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\nusing namespace std;\n\nint main() {\n    for (int i = 0; i < 3; i++) {\n        cout << \"Vuelta \" << i << endl;\n    }\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\nVuelta 0\nVuelta 1\nVuelta 2"
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Nivel 3 · Estructuras y funciones",
+   "description": "Guardar varios datos, reutilizar código y entender punteros.",
+   "sections": [
+    {
+     "title": "Arrays",
+     "text": "Un array tiene tamaño fijo y guarda un solo tipo de dato. Se accede por posición, empezando desde 0.\n\nLos arrays de C++ no tienen `length`: tú debes recordar el tamaño.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\nusing namespace std;\n\nint main() {\n    int numeros[3] = {10, 20, 30};\n    cout << numeros[0] << endl;\n    for (int i = 0; i < 3; i++) {\n        cout << numeros[i] << endl;\n    }\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\n10\n10\n20\n30"
+     ],
+     "note": "C++ no revisa que la posición exista. Leer `numeros[10]` no da error claro, da basura o un fallo raro."
+    },
+    {
+     "title": "Funciones",
+     "text": "Una función es un bloque reutilizable. Se declara con el tipo que devuelve, el nombre y los parámetros. `void` significa que no devuelve nada.\n\nDebe estar escrita antes de `main` (o declarada antes con un prototipo).",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\n#include <string>\nusing namespace std;\n\nint sumar(int a, int b) {\n    return a + b;\n}\n\nvoid saludar(string nombre) {\n    cout << \"Hola \" << nombre << endl;\n}\n\nint main() {\n    saludar(\"Ana\");\n    cout << sumar(4, 5) << endl;\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\nHola Ana\n9"
+     ]
+    },
+    {
+     "title": "vector",
+     "text": "Es como un array pero puede crecer. Se incluye con `#include <vector>` y el tipo de los elementos va entre `< >`.\n\n`push_back()` agrega al final y `size()` cuenta los elementos.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\n#include <vector>\n#include <string>\nusing namespace std;\n\nint main() {\n    vector<string> frutas;\n    frutas.push_back(\"manzana\");\n    frutas.push_back(\"pera\");\n    cout << frutas[0] << endl;\n    cout << frutas.size() << endl;\n    for (string f : frutas) {\n        cout << \"- \" << f << endl;\n    }\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\nmanzana\n2\n- manzana\n- pera"
+     ]
+    },
+    {
+     "title": "Punteros",
+     "text": "Un puntero guarda la dirección de memoria de otra variable.\n\n• `&x` es la dirección de `x`.\n• `int *p` declara un puntero a `int`.\n• `*p` accede al valor al que apunta.\n\nSi cambias `*p`, cambias la variable original.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\nusing namespace std;\n\nint main() {\n    int x = 10;\n    int *p = &x;\n    cout << *p << endl;\n    *p = 25;\n    cout << x << endl;\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\n10\n25"
+     ]
+    }
+   ]
+  }
+ ],
+ "guides": [
+  {
+   "title": "Instalar C++ en Termux",
+   "text": "En Termux el compilador se llama `clang` y se instala con `pkg`. El mismo paquete sirve para C y para C++.\n\nPara escribir archivos instala también `nano`.",
+   "examples": [
+    "$ pkg update && pkg upgrade\n$ pkg install clang\n$ clang++ --version\nclang version 19.1.7"
+   ],
+   "note": "El número de versión puede ser distinto según cuándo lo instales."
+  },
+  {
+   "title": "Compilar y correr un archivo",
+   "text": "C++ se compila: el compilador convierte tu código en un ejecutable. `-o hola` le pone nombre al resultado y `./` significa \"en esta carpeta\".\n\nSi cambias el código, tienes que volver a compilar.",
+   "examples": [
+    "$ nano hola.cpp\n$ clang++ hola.cpp -o hola\n$ ls\nhola  hola.cpp\n$ ./hola\nHola, mundo"
+   ]
+  },
+  {
+   "title": "Llaves y punto y coma",
+   "text": "• Cada instrucción termina con `;`. Si falta, el compilador marca error.\n• Las llaves `{ }` abren y cierran bloques: `main`, `if`, `for`, funciones... Cada `{` necesita su `}`.\n• Después del `)` de un `if`, `for` o `while` no va `;`.\n• Después de la `}` de una función tampoco.\n• La sangría no es obligatoria, pero ayuda a leer el código.",
+   "examples": [
+    "$ cat hola.cpp\n#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << \"Hola\" << endl\n    return 0;\n}\n$ clang++ hola.cpp -o hola\nhola.cpp:5:27: error: expected ';' after expression\n    cout << \"Hola\" << endl\n                          ^\n                          ;\n1 error generated."
+   ]
+  },
+  {
+   "title": "#include y using namespace",
+   "text": "`#include <iostream>` con `< >` trae librerías estándar. Con comillas, `#include \"mi.h\"`, trae archivos tuyos.\n\n`using namespace std;` te deja escribir `cout` en vez de `std::cout`. Es cómodo para aprender; en proyectos grandes se prefiere escribir `std::`.",
+   "examples": [
+    "$ cat sin_using.cpp\n#include <iostream>\n\nint main() {\n    std::cout << \"Hola\" << std::endl;\n    return 0;\n}\n$ clang++ sin_using.cpp -o sin_using\n$ ./sin_using\nHola"
+   ]
+  }
+ ]
+}

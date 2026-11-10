@@ -1,0 +1,8 @@
+{
+ "languages": [
+  {"id": "python", "name": "Python", "description": "Simple y legible. Ideal para empezar.", "file": "python.json", "color": "#FFD845"},
+  {"id": "java", "name": "Java", "description": "Estricto y ordenado. Todo va dentro de clases.", "file": "java.json", "color": "#F89820"},
+  {"id": "cpp", "name": "C++", "description": "Rápido y potente. Se compila antes de correr.", "file": "cpp.json", "color": "#5C9DFF"},
+  {"id": "c", "name": "C", "description": "La base de todo. Control total, pocas ayudas.", "file": "c.json", "color": "#A8B9CC"}
+ ]
+}
