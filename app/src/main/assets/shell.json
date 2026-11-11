@@ -1,0 +1,249 @@
+{
+ "name": "Shell",
+ "levels": [
+  {
+   "title": "Nivel 1 · Lo básico",
+   "description": "Tu primer script, variables, entrada y argumentos.",
+   "sections": [
+    {
+     "title": "echo y tu primer script",
+     "text": "La shell es el programa que lee los comandos que escribes en la terminal. En Termux es `bash`. Un script es un archivo de texto con una lista de comandos que se ejecutan de arriba hacia abajo.\n\nLa primera línea `#!/usr/bin/env bash` (el \"shebang\") dice con qué programa se corre el archivo. Las líneas que empiezan con `#` son comentarios. `echo` muestra texto en pantalla.",
+     "examples": [
+      "$ cat hola.sh\n#!/usr/bin/env bash\n# Mi primer script\necho \"Hola, mundo\"\necho Hola sin comillas\necho -e \"Linea 1\\nLinea 2\"\n$ bash hola.sh\nHola, mundo\nHola sin comillas\nLinea 1\nLinea 2"
+     ],
+     "note": "`echo` no interpreta `\\n` por sí solo. Para que salte de línea usa `echo -e` o `printf`."
+    },
+    {
+     "title": "Variables",
+     "text": "Una variable se crea con `nombre=valor`, y no puede haber espacios alrededor del `=`. Para leerla se escribe un `$` delante: `$nombre`. Si está pegada a otro texto, usa llaves: `${nombre}`.\n\nTodo es texto; Bash no tiene tipos. Los números se tratan como números solo dentro de `$(( ))`.",
+     "examples": [
+      "$ cat hola.sh\n#!/usr/bin/env bash\nnombre=\"Ana\"\nedad=12\necho \"Hola $nombre\"\necho \"Tienes ${edad} años\"\necho \"El año que viene: $((edad + 1))\"\n$ bash hola.sh\nHola Ana\nTienes 12 años\nEl año que viene: 13"
+     ]
+    },
+    {
+     "title": "Comillas simples y dobles",
+     "text": "Con comillas dobles `\" \"` el `$` se reemplaza por el valor de la variable. Con comillas simples `' '` todo se toma literal, sin reemplazar nada. Para mostrar un `$` dentro de comillas dobles, se escribe `\\$`.\n\nConviene poner casi siempre las variables entre comillas dobles: `\"$archivo\"`. Así no se rompen si el valor tiene espacios.",
+     "examples": [
+      "$ cat hola.sh\n#!/usr/bin/env bash\nx=\"mundo\"\necho \"Hola $x\"\necho 'Hola $x'\necho \"Costo: \\$5\"\n$ bash hola.sh\nHola mundo\nHola $x\nCosto: $5"
+     ]
+    },
+    {
+     "title": "read: pedir datos",
+     "text": "`read` espera que el usuario escriba algo y lo guarda en una variable. Con `-p` muestra un mensaje antes. Si das varios nombres de variable, reparte las palabras entre ellas.",
+     "examples": [
+      "$ cat hola.sh\n#!/usr/bin/env bash\nread -p \"¿Cómo te llamas? \" nombre\necho \"Hola $nombre\"\n$ bash hola.sh\n¿Cómo te llamas? Ana\nHola Ana"
+     ]
+    },
+    {
+     "title": "Argumentos del script",
+     "text": "Lo que escribes después del nombre del script se guarda en variables especiales: `$1` es el primero, `$2` el segundo, y así. `$0` es el nombre del script, `$#` la cantidad de argumentos y `$@` todos juntos.",
+     "examples": [
+      "$ cat args.sh\n#!/usr/bin/env bash\necho \"Script: $0\"\necho \"Primero: $1\"\necho \"Cantidad: $#\"\necho \"Todos: $@\"\n$ bash args.sh uno dos tres\nScript: args.sh\nPrimero: uno\nCantidad: 3\nTodos: uno dos tres"
+     ]
+    },
+    {
+     "title": "Aritmética",
+     "text": "Los cálculos van dentro de `$(( ))`. Se pueden usar `+ - * / % **`. Bash solo trabaja con enteros: `7 / 2` da 3.\n\nPara decimales se usa la calculadora `bc` (se instala con `pkg install bc`), pasándole la cuenta con una tubería.",
+     "examples": [
+      "$ cat hola.sh\n#!/usr/bin/env bash\na=7\nb=2\necho $((a + b))\necho $((a / b))\necho $((a % b))\necho $((a ** 2))\n$ bash hola.sh\n9\n3\n1\n49",
+      "$ echo \"scale=2; 7/2\" | bc\n3.50"
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Nivel 2 · Decisiones y bucles",
+   "description": "Condiciones, selección múltiple y repeticiones.",
+   "sections": [
+    {
+     "title": "if con [ ]",
+     "text": "`if` evalúa un comando; con `[ condición ]` comparas valores. Las partes son `if ...; then`, `elif`, `else` y se cierra con `fi` (if al revés).\n\nPara números: `-eq` igual, `-ne` distinto, `-lt` menor, `-le` menor o igual, `-gt` mayor, `-ge` mayor o igual. Para textos: `=` y `!=`; `-z` pregunta si está vacío.",
+     "examples": [
+      "$ cat hola.sh\n#!/usr/bin/env bash\nedad=15\nif [ \"$edad\" -ge 18 ]; then\n    echo \"Adulto\"\nelse\n    echo \"Menor\"\nfi\n$ bash hola.sh\nMenor"
+     ],
+     "note": "Los espacios dentro de los corchetes son obligatorios: `[ \"$a\" = \"$b\" ]`. Sin ellos da error."
+    },
+    {
+     "title": "Preguntar por archivos",
+     "text": "Dentro de `[ ]` hay pruebas especiales para archivos: `-e` existe, `-f` es un archivo común, `-d` es una carpeta, `-r` se puede leer, `-x` se puede ejecutar. Con `!` se niega.",
+     "examples": [
+      "$ cat hola.sh\n#!/usr/bin/env bash\nif [ -f notas.txt ]; then\n    echo \"notas.txt existe\"\nelse\n    echo \"notas.txt no existe\"\nfi\n$ bash hola.sh\nnotas.txt no existe\n$ touch notas.txt\n$ bash hola.sh\nnotas.txt existe"
+     ]
+    },
+    {
+     "title": "[[ ]], && y ||",
+     "text": "`[[ ]]` es la versión más cómoda de Bash: permite `&&` (y), `||` (o) dentro de la condición y comparar con patrones como `A*`. Con `==` compara textos.",
+     "examples": [
+      "$ cat hola.sh\n#!/usr/bin/env bash\nn=5\nif [[ $n -gt 3 && $n -lt 10 ]]; then\n    echo \"entre 3 y 10\"\nfi\nnombre=\"Ana\"\nif [[ $nombre == A* ]]; then\n    echo \"empieza con A\"\nfi\n$ bash hola.sh\nentre 3 y 10\nempieza con A"
+     ]
+    },
+    {
+     "title": "case",
+     "text": "`case` compara una variable contra varios patrones. Cada opción termina con `;;`, se pueden juntar patrones con `|` y `*` es el caso por defecto. Se cierra con `esac` (case al revés).",
+     "examples": [
+      "$ cat hola.sh\n#!/usr/bin/env bash\nread -p \"Opción (s/n): \" op\ncase $op in\n    s|S) echo \"Sí\" ;;\n    n|N) echo \"No\" ;;\n    *) echo \"No entendí\" ;;\nesac\n$ bash hola.sh\nOpción (s/n): s\nSí"
+     ]
+    },
+    {
+     "title": "for",
+     "text": "`for variable in lista; do ... done` repite para cada elemento. La lista puede ser palabras sueltas, un rango `{1..3}` o archivos con comodines como `*.txt`.\n\nTambién existe el `for` al estilo C con dobles paréntesis.",
+     "examples": [
+      "$ cat hola.sh\n#!/usr/bin/env bash\nfor fruta in manzana pera uva; do\n    echo \"- $fruta\"\ndone\nfor i in {1..3}; do\n    echo \"Vuelta $i\"\ndone\nfor ((i = 0; i < 2; i++)); do\n    echo \"i = $i\"\ndone\n$ bash hola.sh\n- manzana\n- pera\n- uva\nVuelta 1\nVuelta 2\nVuelta 3\ni = 0\ni = 1"
+     ]
+    },
+    {
+     "title": "while y leer líneas",
+     "text": "`while condición; do ... done` repite mientras la condición sea verdadera. `until` hace lo contrario: repite hasta que se cumpla.\n\nUna forma muy común es leer un archivo línea por línea con `while read -r linea; do ... done < archivo`.",
+     "examples": [
+      "$ cat hola.sh\n#!/usr/bin/env bash\nn=3\nwhile [ $n -gt 0 ]; do\n    echo \"Cuenta: $n\"\n    n=$((n - 1))\ndone\necho \"¡Listo!\"\n$ bash hola.sh\nCuenta: 3\nCuenta: 2\nCuenta: 1\n¡Listo!",
+      "$ cat leer.sh\nwhile read -r linea; do\n    echo \"> $linea\"\ndone < notas.txt\n$ cat notas.txt\nuno\ndos\n$ bash leer.sh\n> uno\n> dos"
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Nivel 3 · Funciones y tuberías",
+   "description": "Funciones, redirecciones y herramientas de texto, el verdadero poder de la shell.",
+   "sections": [
+    {
+     "title": "Funciones",
+     "text": "Una función se define con `nombre() { ... }`. Recibe argumentos como un script: `$1`, `$2`... Con `local` la variable existe solo dentro de la función.\n\n`return` solo devuelve un código de 0 a 255. Para \"devolver\" un valor, la función lo muestra con `echo` y quien la llama lo captura con `$( )`.",
+     "examples": [
+      "$ cat hola.sh\n#!/usr/bin/env bash\nsaludar() {\n    echo \"Hola $1\"\n}\n\nsumar() {\n    local total=$(($1 + $2))\n    echo $total\n}\n\nsaludar \"Ana\"\nresultado=$(sumar 4 5)\necho \"Resultado: $resultado\"\n$ bash hola.sh\nHola Ana\nResultado: 9"
+     ]
+    },
+    {
+     "title": "Códigos de salida",
+     "text": "Todo comando termina con un código: 0 significa que salió bien y cualquier otro número significa error. El último código se lee en `$?`.\n\nSe puede encadenar: `a && b` ejecuta `b` solo si `a` salió bien, y `a || b` ejecuta `b` solo si `a` falló. Con `exit N` tu script termina con el código que elijas.",
+     "examples": [
+      "$ cat hola.sh\n#!/usr/bin/env bash\nls /carpeta_que_no_existe 2> /dev/null\necho \"Código: $?\"\necho \"hola\" > /dev/null\necho \"Código: $?\"\ntrue && echo \"true funcionó\"\nfalse || echo \"false falló\"\n$ bash hola.sh\nCódigo: 2\nCódigo: 0\ntrue funcionó\nfalse falló"
+     ]
+    },
+    {
+     "title": "Redirecciones",
+     "text": "• `>` guarda la salida en un archivo (borra lo que había).\n• `>>` agrega al final del archivo.\n• `<` usa un archivo como entrada.\n• `2>` redirige los errores.\n• `> /dev/null` descarta la salida.",
+     "examples": [
+      "$ echo \"Linea 1\" > notas.txt\n$ echo \"Linea 2\" >> notas.txt\n$ cat notas.txt\nLinea 1\nLinea 2\n$ ls /no_existe 2> errores.txt\n$ cat errores.txt\nls: cannot access '/no_existe': No such file or directory"
+     ]
+    },
+    {
+     "title": "Tuberías",
+     "text": "El símbolo `|` (tubería o pipe) conecta la salida de un comando con la entrada del siguiente. Es la idea central de la shell: comandos chicos que hacen una cosa bien, combinados entre sí.\n\n`sort` ordena líneas, `uniq` quita repetidas seguidas (por eso va después de `sort`) y `uniq -c` las cuenta.",
+     "examples": [
+      "$ printf \"manzana\\npera\\nmanzana\\nuva\\n\" | sort | uniq -c\n      2 manzana\n      1 pera\n      1 uva"
+     ]
+    },
+    {
+     "title": "grep, cut, sort, head y tail",
+     "text": "Herramientas básicas para trabajar con texto. Sobre un archivo `datos.csv`:\n\n• `grep texto archivo` muestra las líneas que contienen el texto.\n• `cut -d, -f1` saca la primera columna separando por comas.\n• `wc -l` cuenta líneas.\n• `sort -t, -k2 -n` ordena por la segunda columna como número.\n• `head -n N` y `tail -n N` toman las primeras o últimas líneas; `tail -n +2` salta el encabezado.",
+     "examples": [
+      "$ cat datos.csv\nnombre,nota\nAna,9\nLuis,7\nEva,10\n$ grep Ana datos.csv\nAna,9\n$ cut -d, -f1 datos.csv\nnombre\nAna\nLuis\nEva\n$ wc -l datos.csv\n4 datos.csv\n$ sort -t, -k2 -n datos.csv\nnombre,nota\nLuis,7\nAna,9\nEva,10\n$ tail -n +2 datos.csv | head -n 2\nAna,9\nLuis,7"
+     ]
+    },
+    {
+     "title": "sed y awk",
+     "text": "`sed` edita texto al vuelo; el uso más común es `sed 's/viejo/nuevo/'`, que reemplaza la primera aparición en cada línea (con `g` al final, todas).\n\n`awk` trata cada línea como columnas: `$1` es la primera, `$2` la segunda. Es ideal para calcular sobre tablas. `-F,` indica que el separador es la coma, `NR` es el número de línea y `END` se ejecuta al final.",
+     "examples": [
+      "$ echo \"hola mundo\" | sed 's/mundo/shell/'\nhola shell\n$ awk -F, '{print $1}' datos.csv\nnombre\nAna\nLuis\nEva\n$ awk -F, 'NR>1 {suma += $2} END {print suma / (NR-1)}' datos.csv\n8.66667"
+     ],
+     "note": "Si `awk` no está, instálalo con `pkg install gawk`."
+    },
+    {
+     "title": "Expansión de variables",
+     "text": "Bash puede transformar variables sin comandos externos: `${#texto}` da el largo, `${texto^^}` pasa a mayúsculas, `${texto/viejo/nuevo}` reemplaza y `$(comando)` inserta la salida de un comando.",
+     "examples": [
+      "$ cat hola.sh\n#!/usr/bin/env bash\ntexto=\"Hola Mundo\"\necho \"Largo: ${#texto}\"\necho \"En mayúsculas: ${texto^^}\"\necho \"Reemplazo: ${texto/Mundo/Shell}\"\necho \"Sustitución: $(echo hola | tr a-z A-Z)\"\n$ bash hola.sh\nLargo: 10\nEn mayúsculas: HOLA MUNDO\nReemplazo: Hola Shell\nSustitución: HOLA"
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Nivel 4 · Archivos y automatización",
+   "description": "Manejar archivos, permisos y escribir scripts útiles.",
+   "sections": [
+    {
+     "title": "Manejar archivos y carpetas",
+     "text": "• `pwd` muestra dónde estás y `cd` te mueve (`cd ..` sube una carpeta).\n• `ls` lista; `ls -l` con detalles.\n• `mkdir -p a/b` crea carpetas (y las intermedias).\n• `touch` crea un archivo vacío.\n• `cp` copia, `mv` mueve o renombra.\n• `rm` borra; `rm -r` borra carpetas completas.",
+     "examples": [
+      "$ pwd\n/data/data/com.termux/files/home\n$ mkdir -p proyecto/src\n$ cd proyecto\n$ touch src/a.txt\n$ cp src/a.txt src/b.txt\n$ mv src/b.txt src/c.txt\n$ ls src\na.txt  c.txt\n$ cd ..\n$ rm -r proyecto\n$ ls proyecto\nls: cannot access 'proyecto': No such file or directory"
+     ],
+     "note": "`rm` no tiene papelera ni pide confirmación. Revisa dos veces antes de usar `rm -r`."
+    },
+    {
+     "title": "Permisos y ejecutables",
+     "text": "`ls -l` muestra los permisos al inicio de cada línea. Las letras `r` (leer), `w` (escribir) y `x` (ejecutar) aparecen para el dueño, el grupo y el resto.\n\nPara correr un script directamente con `./hola.sh` necesita permiso de ejecución: `chmod +x hola.sh`. Si no, usa `bash hola.sh`.",
+     "examples": [
+      "$ ls -l hola.sh\n-rw------- 1 u0_a345 u0_a345 39 Nov 10 20:00 hola.sh\n$ chmod +x hola.sh\n$ ls -l hola.sh\n-rwx------ 1 u0_a345 u0_a345 39 Nov 10 20:00 hola.sh\n$ ./hola.sh\nHola, mundo"
+     ],
+     "note": "El usuario, el tamaño y la fecha cambian en cada dispositivo."
+    },
+    {
+     "title": "Arrays",
+     "text": "Un array guarda varios valores: `frutas=(manzana pera uva)`. Se lee con `${frutas[0]}`, la cantidad es `${#frutas[@]}` y todos los elementos son `\"${frutas[@]}\"`. Con `+=( )` agregas uno.",
+     "examples": [
+      "$ cat hola.sh\n#!/usr/bin/env bash\nfrutas=(manzana pera uva)\necho \"${frutas[0]}\"\necho \"${#frutas[@]}\"\nfrutas+=(kiwi)\nfor f in \"${frutas[@]}\"; do\n    echo \"- $f\"\ndone\necho \"${frutas[@]:1:2}\"\n$ bash hola.sh\nmanzana\n3\n- manzana\n- pera\n- uva\n- kiwi\npera uva"
+     ]
+    },
+    {
+     "title": "Entorno, PATH y alias",
+     "text": "Las variables de entorno son variables que heredan los programas que lanzas. Se crean con `export`. `HOME` es tu carpeta personal y `PATH` es la lista de carpetas donde la shell busca los comandos.\n\nUn alias es un atajo para un comando largo. Para que tus alias y variables queden siempre, escríbelos en `~/.bashrc`, que se lee al abrir cada terminal.",
+     "examples": [
+      "$ echo $HOME\n/data/data/com.termux/files/home\n$ export SALUDO=\"Hola\"\n$ echo $SALUDO\nHola\n$ alias ll='ls -l'\n$ type ll\nll is aliased to `ls -l'"
+     ]
+    },
+    {
+     "title": "find y grep -r",
+     "text": "`find carpeta -name \"*.txt\"` busca archivos por nombre dentro de una carpeta y sus subcarpetas. `grep -r texto carpeta` busca un texto dentro de todos los archivos.\n\n`find` no garantiza el orden; se lo puede pasar por `sort`.",
+     "examples": [
+      "$ mkdir -p demo/sub\n$ echo \"hola mundo\" > demo/a.txt\n$ echo \"adios\" > demo/sub/b.txt\n$ find demo -name \"*.txt\" | sort\ndemo/a.txt\ndemo/sub/b.txt\n$ grep -r \"hola\" demo\ndemo/a.txt:hola mundo"
+     ]
+    },
+    {
+     "title": "Script: respaldo de una carpeta",
+     "text": "Un script de verdad: recibe una carpeta, revisa que se haya pasado un argumento y que exista, hace la copia y avisa. `exit 1` termina con código de error.",
+     "examples": [
+      "$ cat respaldo.sh\n#!/usr/bin/env bash\norigen=\"$1\"\nif [ -z \"$origen\" ]; then\n    echo \"Uso: $0 CARPETA\"\n    exit 1\nfi\nif [ ! -d \"$origen\" ]; then\n    echo \"No existe la carpeta: $origen\"\n    exit 1\nfi\ncp -r \"$origen\" \"${origen}_respaldo\"\necho \"Respaldo creado: ${origen}_respaldo\"\n$ bash respaldo.sh\nUso: respaldo.sh CARPETA\n$ bash respaldo.sh nada\nNo existe la carpeta: nada\n$ bash respaldo.sh demo\nRespaldo creado: demo_respaldo"
+     ]
+    },
+    {
+     "title": "Depurar scripts",
+     "text": "`bash -x script.sh` muestra cada comando justo antes de ejecutarlo, con un `+` adelante. Sirve para ver qué valor tomó cada variable.\n\nAl inicio de un script serio se suele poner `set -eu`: `-e` detiene el script si un comando falla y `-u` da error si usas una variable que no existe.",
+     "examples": [
+      "$ cat debug.sh\nx=5\necho \"x vale $x\"\n$ bash -x debug.sh\n+ x=5\n+ echo 'x vale 5'\nx vale 5"
+     ]
+    }
+   ]
+  }
+ ],
+ "guides": [
+  {
+   "title": "Shell en Termux",
+   "text": "Termux ya trae `bash`, así que no hay que instalar nada para empezar. Puedes escribir comandos directo o guardarlos en un archivo `.sh`.\n\nAlgunas herramientas de este curso no vienen de fábrica: `nano` (editor), `bc` (calculadora con decimales) y `gawk` (awk completo).",
+   "examples": [
+    "$ echo $SHELL\n/data/data/com.termux/files/usr/bin/bash\n$ pkg install nano bc gawk"
+   ]
+  },
+  {
+   "title": "Crear y correr un script",
+   "text": "Crea el archivo con `nano hola.sh`, escribe el código, guarda con Ctrl + O y Enter, y sal con Ctrl + X.\n\nHay dos formas de correrlo: `bash hola.sh` (siempre funciona) o darle permiso con `chmod +x hola.sh` y ejecutarlo con `./hola.sh`.",
+   "examples": [
+    "$ nano hola.sh\n$ bash hola.sh\nHola, mundo\n$ chmod +x hola.sh\n$ ./hola.sh\nHola, mundo"
+   ],
+   "note": "En Termux no existe `/bin/bash`. El shebang `#!/usr/bin/env bash` funciona; si diera problemas, usa la ruta completa `#!/data/data/com.termux/files/usr/bin/bash`."
+  },
+  {
+   "title": "Espacios y comillas: lo delicado",
+   "text": "En shell los espacios importan muchísimo, porque separan el comando de sus argumentos.\n\n• Al crear una variable no se deja espacio alrededor de `=`.\n• Dentro de `[ ]` los espacios son obligatorios: `[ \"$a\" = \"$b\" ]`.\n• Las variables van entre comillas dobles para que no se rompan con espacios.\n• La sangría no importa.\n• Cada bloque se cierra con su palabra: `fi`, `done`, `esac`.",
+   "examples": [
+    "$ cat mal.sh\nnombre = \"Ana\"\necho $nombre\n$ bash mal.sh\nmal.sh: line 1: nombre: command not found\n"
+   ]
+  },
+  {
+   "title": "Diferencias con otros lenguajes",
+   "text": "• No hay tipos: todo es texto.\n• No hace falta `;` al final de cada línea (solo se usa para poner dos cosas en una línea, como `if ...; then`).\n• El `$` se usa al leer una variable, no al crearla.\n• No hay llaves `{ }` para bloques: se usan palabras (`then`...`fi`, `do`...`done`).\n• Las funciones no devuelven valores: muestran texto y se captura con `$( )`.\n• Un comando que falla no detiene el script, salvo que uses `set -e`.",
+   "examples": [
+    "$ cat distinto.sh\nx=5\necho x\necho $x\n$ bash distinto.sh\nx\n5"
+   ]
+  }
+ ]
+}

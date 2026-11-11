@@ -1,0 +1,1038 @@
+{
+ "name": "Lua | Minetest",
+ "tracks": [
+  {
+   "id": "lua",
+   "title": "Lua (sintaxis)",
+   "description": "Aprende Lua desde cero, la base de todo lo que haces en Luanti.",
+   "levels": [
+    {
+     "title": "Nivel 1 · Lo básico de Lua",
+     "description": "Mostrar texto, variables, tipos, textos y números.",
+     "sections": [
+      {
+       "title": "print",
+       "text": "`print()` muestra algo en pantalla. El texto va entre comillas dobles o simples. Si pasas varios valores separados por coma, `print` los separa con una tabulación.\n\nPara unir texto con otros valores se usa `..` (dos puntos seguidos), no el `+`.",
+       "examples": [
+        "$ cat hola.lua\nprint(\"Hola, mundo\")\nprint(\"Edad: \" .. 12)\nprint(2 + 3)\n$ luajit hola.lua\nHola, mundo\nEdad: 12\n5"
+       ]
+      },
+      {
+       "title": "Comentarios",
+       "text": "Un comentario de una línea empieza con `--`. Los de varias líneas van entre `--[[` y `]]`. Lua los ignora por completo.",
+       "examples": [
+        "$ cat hola.lua\n-- esto es un comentario\nprint(\"Hola\") -- este también\n--[[\ncomentario\nde varias líneas\n]]\n$ luajit hola.lua\nHola"
+       ]
+      },
+      {
+       "title": "Variables y local",
+       "text": "Una variable se crea con `=`, sin declarar el tipo. Si no pones `local`, la variable es global: existe en todo el programa.\n\nEn Luanti todos los mods comparten el mismo espacio global. Una variable global con un nombre común puede pisar la de otro mod y romper cosas. Por eso la regla de oro es: siempre `local` (aquí con `local` la variable vive solo en su bloque).",
+       "examples": [
+        "$ cat hola.lua\nlocal x = 10\ndo\n    local x = 5\n    print(\"dentro: \" .. x)\nend\nprint(\"fuera: \" .. x)\n$ luajit hola.lua\ndentro: 5\nfuera: 10"
+       ]
+      },
+      {
+       "title": "Tipos de datos",
+       "text": "Lua tiene pocos tipos: `nil` (nada, valor vacío), `boolean` (`true`/`false`), `number` (todos los números), `string` (texto), `table` (la estructura de datos de Lua, sirve para todo) y `function`.\n\n`type()` te dice de qué tipo es un valor.",
+       "examples": [
+        "$ cat hola.lua\nprint(type(7))\nprint(type(\"hola\"))\nprint(type(true))\nprint(type(nil))\nprint(type({}))\nprint(type(print))\n$ luajit hola.lua\nnumber\nstring\nboolean\nnil\ntable\nfunction"
+       ]
+      },
+      {
+       "title": "Textos",
+       "text": "`..` une textos y `#` da el largo. Los textos tienen funciones en `string`, y se pueden llamar con dos puntos sobre el propio texto: `t:upper()`.\n\nImportante: las posiciones empiezan en 1, no en 0. `sub(1, 2)` toma desde la primera hasta la segunda letra (ambas incluidas).",
+       "examples": [
+        "$ cat hola.lua\nlocal t = \"Hola\"\nprint(t .. \" Mundo\")\nprint(#t)\nprint(t:upper())\nprint(t:sub(1, 2))\nprint((\"ab\"):rep(3))\nprint(string.format(\"%s tiene %d años y mide %.2f\", \"Ana\", 12, 1.45))\n$ luajit hola.lua\nHola Mundo\n4\nHOLA\nHo\nababab\nAna tiene 12 años y mide 1.45"
+       ]
+      },
+      {
+       "title": "Números y operadores",
+       "text": "Aritméticos: `+ - * / % ^` (el `^` es potencia). `/` siempre divide con decimales. Para redondear hacia abajo usa `math.floor()`.\n\nEn `math` tienes `max`, `min`, `sqrt`, `abs`, `floor`, `ceil`, `random`, `pi`.",
+       "examples": [
+        "$ cat hola.lua\nprint(7 / 2)\nprint(10 / 2)\nprint(7 % 2)\nprint(2 ^ 3)\nprint(math.floor(7 / 2))\nprint(math.max(4, 9))\nprint(math.sqrt(16))\n$ luajit hola.lua\n3.5\n5\n1\n8\n3\n9\n4"
+       ],
+       "note": "Luanti usa LuaJIT (Lua 5.1 con extras). No existe el operador `//` ni el tipo entero aparte: todos los números son decimales, y `10 / 2` se muestra como `5`."
+      }
+     ]
+    },
+    {
+     "title": "Nivel 2 · Decisiones y repeticiones en Lua",
+     "description": "Condiciones, bucles y la particularidad de lo verdadero y lo falso.",
+     "sections": [
+      {
+       "title": "if / elseif / else",
+       "text": "Se escribe `if condición then ... end`. Se puede encadenar con `elseif` (todo junto) y cerrar con `else`. Todo bloque en Lua se cierra con `end`; no hay llaves.\n\nPara \"distinto de\" se usa `~=` (no `!=`).",
+       "examples": [
+        "$ cat hola.lua\nlocal nota = 7\nif nota >= 9 then\n    print(\"Excelente\")\nelseif nota >= 6 then\n    print(\"Aprobado\")\nelse\n    print(\"A recuperar\")\nend\nprint(nota ~= 7)\n$ luajit hola.lua\nAprobado\nfalse"
+       ]
+      },
+      {
+       "title": "and, or, not y lo verdadero",
+       "text": "Los operadores lógicos son palabras: `and`, `or`, `not`.\n\nEn Lua solo `nil` y `false` cuentan como falso. El `0` y el texto vacío `\"\"` son verdaderos, a diferencia de otros lenguajes.\n\n`a or b` devuelve `b` si `a` es falso: es el truco para valores por defecto. `cond and x or y` funciona como un ternario.",
+       "examples": [
+        "$ cat hola.lua\nprint(0 and \"0 es verdadero\")\nprint(\"\" and \"vacío también\")\nprint(nil or \"valor por defecto\")\nprint(not nil)\nlocal edad = 20\nprint(edad >= 18 and \"adulto\" or \"menor\")\n$ luajit hola.lua\n0 es verdadero\nvacío también\nvalor por defecto\ntrue\nadulto"
+       ]
+      },
+      {
+       "title": "while y repeat",
+       "text": "`while condición do ... end` repite mientras se cumpla. `repeat ... until condición` repite hasta que se cumpla y siempre corre al menos una vez.",
+       "examples": [
+        "$ cat hola.lua\nlocal n = 3\nwhile n > 0 do\n    print(\"Cuenta: \" .. n)\n    n = n - 1\nend\nlocal k = 0\nrepeat\n    k = k + 1\n    print(\"k = \" .. k)\nuntil k >= 2\n$ luajit hola.lua\nCuenta: 3\nCuenta: 2\nCuenta: 1\nk = 1\nk = 2"
+       ]
+      },
+      {
+       "title": "for numérico",
+       "text": "`for i = inicio, fin do ... end` cuenta desde el inicio hasta el fin, ambos incluidos. Un tercer número es el paso, que puede ser negativo para contar hacia atrás.",
+       "examples": [
+        "$ cat hola.lua\nfor i = 1, 3 do\n    print(\"Vuelta \" .. i)\nend\nfor i = 10, 1, -4 do\n    print(i)\nend\n$ luajit hola.lua\nVuelta 1\nVuelta 2\nVuelta 3\n10\n6\n2"
+       ]
+      },
+      {
+       "title": "break y goto continue",
+       "text": "`break` corta el bucle. Lua no tiene `continue`, pero se imita con `goto` y una etiqueta al final del bloque: `goto continue` salta a `::continue::`.",
+       "examples": [
+        "$ cat hola.lua\nfor i = 1, 5 do\n    if i == 2 then goto continue end\n    if i == 5 then break end\n    print(i)\n    ::continue::\nend\n$ luajit hola.lua\n1\n3\n4"
+       ]
+      }
+     ]
+    },
+    {
+     "title": "Nivel 3 · Tablas y funciones",
+     "description": "La parte más importante de Lua para hacer mods.",
+     "sections": [
+      {
+       "title": "Tablas como listas",
+       "text": "La tabla es la única estructura de Lua. Como lista, va entre llaves y los índices empiezan en 1. `#t` da la cantidad. Funciones útiles: `table.insert`, `table.remove`, `table.concat` y `table.sort`. `ipairs` recorre una lista en orden.",
+       "examples": [
+        "$ cat hola.lua\nlocal frutas = {\"manzana\", \"pera\"}\ntable.insert(frutas, \"uva\")\nprint(#frutas)\nprint(frutas[1])\nprint(table.concat(frutas, \", \"))\ntable.remove(frutas, 1)\nfor i, f in ipairs(frutas) do\n    print(i .. \": \" .. f)\nend\n$ luajit hola.lua\n3\nmanzana\nmanzana, pera, uva\n1: pera\n2: uva"
+       ]
+      },
+      {
+       "title": "Tablas como diccionarios",
+       "text": "Con claves de texto, una tabla funciona como diccionario. `t.nombre` es lo mismo que `t[\"nombre\"]`. Para borrar una clave se le asigna `nil`.\n\n`pairs` recorre todas las claves, pero en orden no garantizado. Si necesitas orden, junta las claves y ordénalas con `table.sort`.",
+       "examples": [
+        "$ cat hola.lua\nlocal alumno = {nombre = \"Ana\", edad = 12}\nprint(alumno.nombre)\nalumno.grado = 6\nprint(alumno[\"grado\"])\nalumno.edad = nil\nlocal claves = {}\nfor k in pairs(alumno) do\n    claves[#claves + 1] = k\nend\ntable.sort(claves)\nprint(table.concat(claves, \", \"))\n$ luajit hola.lua\nAna\n6\ngrado, nombre"
+       ]
+      },
+      {
+       "title": "Tablas anidadas",
+       "text": "Una tabla puede contener otras tablas, y así armas estructuras complejas. En Luanti las posiciones del mundo son tablas `{x = 0, y = 10, z = 0}`, y las definiciones de nodos e ítems son tablas grandes.",
+       "examples": [
+        "$ cat hola.lua\nlocal mundo = {\n    nombre = \"Pruebas\",\n    jugadores = {\"Ana\", \"Luis\"},\n    spawn = {x = 0, y = 10, z = 0},\n}\nprint(mundo.jugadores[2])\nprint(mundo.spawn.y)\n$ luajit hola.lua\nLuis\n10"
+       ]
+      },
+      {
+       "title": "Funciones",
+       "text": "Se definen con `function nombre(parámetros) ... end` y devuelven con `return`. Escríbelas con `local` para no ensuciar el espacio global. Una función también puede guardarse en una variable.\n\nSi no te pasan un argumento, llega como `nil`; el truco `b = b or 10` le da un valor por defecto.",
+       "examples": [
+        "$ cat hola.lua\nlocal function sumar(a, b)\n    b = b or 10\n    return a + b\nend\n\nlocal saludar = function(nombre)\n    print(\"Hola \" .. nombre)\nend\n\nprint(sumar(4, 5))\nprint(sumar(4))\nsaludar(\"Ana\")\n$ luajit hola.lua\n9\n14\nHola Ana"
+       ]
+      },
+      {
+       "title": "Varios retornos y ...",
+       "text": "Una función puede devolver varios valores a la vez, y se reciben con varias variables. Con `...` acepta cualquier cantidad de argumentos; `{...}` los junta en una tabla.",
+       "examples": [
+        "$ cat hola.lua\nlocal function minmax(a, b)\n    if a < b then\n        return a, b\n    end\n    return b, a\nend\n\nlocal menor, mayor = minmax(9, 3)\nprint(menor .. \" \" .. mayor)\n\nlocal function sumar_todo(...)\n    local total = 0\n    for _, n in ipairs({...}) do\n        total = total + n\n    end\n    return total\nend\nprint(sumar_todo(1, 2, 3, 4))\n$ luajit hola.lua\n3 9\n10"
+       ]
+      },
+      {
+       "title": "Funciones como valores y closures",
+       "text": "En Lua las funciones son valores comunes: se guardan en variables, se pasan como argumentos y se devuelven. Una función que recuerda las variables locales de donde nació se llama closure.\n\nEsto es fundamental en Luanti: casi todo se hace pasando funciones (callbacks) que el juego llama cuando pasa algo.",
+       "examples": [
+        "$ cat hola.lua\nlocal function contador()\n    local n = 0\n    return function()\n        n = n + 1\n        return n\n    end\nend\n\nlocal c = contador()\nprint(c())\nprint(c())\nprint(c())\n\nlocal function repetir(veces, f)\n    for i = 1, veces do\n        f(i)\n    end\nend\nrepetir(2, function(i)\n    print(\"llamada \" .. i)\nend)\n$ luajit hola.lua\n1\n2\n3\nllamada 1\nllamada 2"
+       ]
+      },
+      {
+       "title": "Métodos y objetos",
+       "text": "Con `:` en vez de `.` Lua pasa el propio objeto como primer parámetro, llamado `self`. `obj:metodo(x)` equivale a `obj.metodo(obj, x)`.\n\nCon una metatabla y `__index` armas clases simples. En la API de Luanti todo lo que devuelve objetos (jugadores, inventarios, metadatos) se usa así: `player:get_pos()`.",
+       "examples": [
+        "$ cat hola.lua\nlocal Perro = {}\nPerro.__index = Perro\n\nfunction Perro.nuevo(nombre)\n    local self = setmetatable({}, Perro)\n    self.nombre = nombre\n    return self\nend\n\nfunction Perro:ladrar()\n    print(self.nombre .. \" dice guau\")\nend\n\nlocal p = Perro.nuevo(\"Toby\")\np:ladrar()\n$ luajit hola.lua\nToby dice guau"
+       ]
+      },
+      {
+       "title": "pcall y error",
+       "text": "`error(\"mensaje\")` lanza un error. `pcall(función)` ejecuta la función \"protegida\": si falla, no corta el programa y devuelve `false` y el mensaje; si sale bien, devuelve `true` y el resultado.\n\nEn Luanti un error sin atrapar detiene el servidor con un mensaje, así que `pcall` es útil para código arriesgado.",
+       "examples": [
+        "$ cat hola.lua\nlocal ok, err = pcall(function()\n    error(\"algo salió mal\", 0)\nend)\nprint(ok)\nprint(err)\nlocal ok2, val = pcall(function()\n    return 5\nend)\nprint(tostring(ok2) .. \" \" .. val)\n$ luajit hola.lua\nfalse\nalgo salió mal\ntrue 5"
+       ]
+      },
+      {
+       "title": "Búsqueda y patrones de texto",
+       "text": "Lua no usa expresiones regulares sino patrones propios: `%d` dígito, `%a` letra, `%s` espacio, `+` una o más veces, `.` cualquier carácter.\n\n`find` busca y devuelve la posición, `match` extrae, `gsub` reemplaza (devuelve también la cantidad, por eso va entre paréntesis extra) y `gmatch` recorre todas las coincidencias.",
+       "examples": [
+        "$ cat hola.lua\nlocal a, b = string.find(\"hola mundo\", \"mundo\")\nprint(a .. \"-\" .. b)\nprint(string.match(\"edad: 12\", \"%d+\"))\nprint((string.gsub(\"hola mundo\", \"o\", \"0\")))\nfor palabra in string.gmatch(\"uno dos tres\", \"%a+\") do\n    print(palabra)\nend\n$ luajit hola.lua\n6-10\n12\nh0la mund0\nuno\ndos\ntres"
+       ]
+      },
+      {
+       "title": "Archivos y módulos",
+       "text": "Un módulo es un archivo que devuelve una tabla con sus funciones. Con `require(\"nombre\")` lo usas desde otro archivo.\n\nOjo: dentro de Luanti no existe `require`. Allí se usa `dofile(ruta)`, y para que un mod comparta funciones se usa una tabla global con el nombre del mod.",
+       "examples": [
+        "$ cat util.lua\nlocal M = {}\n\nfunction M.doble(n)\n    return n * 2\nend\n\nreturn M\n$ cat main.lua\nlocal util = require(\"util\")\nprint(util.doble(21))\n$ luajit main.lua\n42"
+       ]
+      },
+      {
+       "title": "Lua en Luanti: particularidades",
+       "text": "Luanti usa LuaJIT, que es Lua 5.1 con algunos extras. Cosas que debes saber:\n\n• No existe `//` ni `math.type`.\n• Todos los números son decimales.\n• Se usa `unpack(t)` (no `table.unpack`).\n• `goto` sí funciona.\n• Existe la librería `bit` para operaciones de bits.\n• `#` sobre una tabla con huecos no es confiable: no dejes `nil` en el medio de una lista.\n• Luanti agrega funciones propias, como `dump()` para mostrar tablas y `vector`.",
+       "examples": [
+        "$ cat hola.lua\nlocal t = {10, 20, 30}\nprint(select(\"#\", unpack(t)))\nprint(bit.band(6, 3))\nprint(bit.bor(4, 1))\n$ luajit hola.lua\n3\n2\n5"
+       ]
+      }
+     ]
+    }
+   ],
+   "guides": [
+    {
+     "title": "Instalar LuaJIT en Termux",
+     "text": "En Termux instala LuaJIT, que es la misma versión que usa Luanti, así tus pruebas se comportan igual que en el juego.\n\nSi prefieres Lua oficial, `pkg install lua54` instala el comando `lua5.4`; ten en cuenta que tiene diferencias con LuaJIT.",
+     "examples": [
+      "$ pkg update && pkg upgrade\n$ pkg install luajit\n$ luajit -v\nLuaJIT 2.1.x ..."
+     ],
+     "note": "El número de versión puede ser distinto según cuándo lo instales."
+    },
+    {
+     "title": "Crear y correr un archivo Lua",
+     "text": "Crea el archivo con `nano hola.lua`, escribe el código y guarda con Ctrl + O, Enter y Ctrl + X. Para correrlo escribe `luajit` y el nombre del archivo.\n\nEstos scripts corren solos, fuera de Luanti, así que no tienen la API del juego (`minetest.*`). Sirven para practicar la sintaxis.",
+     "examples": [
+      "$ nano hola.lua\n$ luajit hola.lua\nHola, mundo"
+     ]
+    },
+    {
+     "title": "Lo propio de la sintaxis de Lua",
+     "text": "• Los bloques se cierran con `end` (no hay llaves).\n• `if` y `elseif` llevan `then`; `for` y `while` llevan `do`.\n• Los índices de las listas empiezan en 1.\n• Distinto se escribe `~=`.\n• El texto se une con `..`.\n• Los comentarios empiezan con `--`.\n• Los `;` al final de línea son opcionales (casi nadie los usa).\n• La sangría no importa, pero conviene usar 4 espacios.\n• Siempre `local`.",
+     "examples": [
+      "$ cat mal.lua\nif 5 > 3\n    print(\"hola\")\nend\n$ luajit mal.lua\nluajit: mal.lua:2: 'then' expected near 'print'"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mod",
+   "title": "Mod",
+   "description": "Crea mods: nodos, ítems, comandos, mundo, entidades, menús y cómo publicarlos.",
+   "levels": [
+    {
+     "title": "Nivel 1 · Primeros pasos",
+     "description": "Entender qué es un mod, cómo se organiza y cómo probarlo.",
+     "sections": [
+      {
+       "title": "Qué es Luanti y qué es un mod",
+       "text": "Luanti (antes Minetest) es un motor de juegos de bloques. El motor solo sabe dibujar el mundo y mover jugadores; todo lo demás (qué bloques existen, cómo se craftea, qué hace cada herramienta) lo definen juegos y mods escritos en Lua.\n\n• Motor: el programa que instalas.\n• Juego (game): un paquete completo de contenido, como Minetest Game.\n• Mod: un paquete de código y recursos que agrega o cambia cosas. Un juego en realidad es un conjunto de mods.\n\nLos mods corren en el servidor, incluso en un mundo de un solo jugador (el juego lanza un servidor interno). Por eso el código de un mod decide qué pasa y los clientes solo lo muestran.",
+       "examples": [
+        "$ ls\ngames  mods  textures  worlds  minetest.conf  debug.txt"
+       ],
+       "note": "Esa es la carpeta de datos de Luanti. En Android suele estar en `Android/data/net.minetest.minetest/files/Minetest/`. Tus mods sueltos van en `mods/`, los juegos en `games/`, los mundos en `worlds/` y los paquetes de texturas en `textures/`."
+      },
+      {
+       "title": "Estructura de un mod",
+       "text": "Un mod es una carpeta. Su nombre es el nombre del mod: solo minúsculas, números y guion bajo. Dentro puede tener:\n\n• `init.lua`: el código principal. Es lo único obligatorio junto con `mod.conf`.\n• `mod.conf`: datos del mod (nombre, dependencias).\n• `textures/`: imágenes `.png`.\n• `sounds/`: sonidos `.ogg`.\n• `models/`: modelos 3D (`.obj`, `.b3d`).\n• `locale/`: traducciones.\n• `settingtypes.txt`: opciones configurables.\n• `README.md`, `LICENSE`, `screenshot.png`: para publicarlo.",
+       "examples": [
+        "$ ls -R mimod\nmimod:\ninit.lua  mod.conf  textures\n\nmimod/textures:\nmimod_bloque.png"
+       ]
+      },
+      {
+       "title": "Tu primer mod",
+       "text": "Crea la carpeta `mods/hola/` con dos archivos. `mod.conf` dice cómo se llama el mod. `init.lua` se ejecuta una vez al cargar el mundo.\n\nPara probarlo: crea o abre un mundo, pulsa \"Configurar\", marca el mod `hola` como activado y entra. `minetest.log` escribe en la consola y en `debug.txt`. Con `register_on_joinplayer` mandamos un mensaje al jugador que entra.",
+       "examples": [
+        "$ cat hola/mod.conf\nname = hola\ndescription = Mi primer mod\n$ cat hola/init.lua\nminetest.log(\"action\", \"[hola] mod cargado\")\n\nminetest.register_on_joinplayer(function(player)\n    local nombre = player:get_player_name()\n    minetest.chat_send_player(nombre, \"Hola \" .. nombre .. \", bienvenido\")\nend)\n[en el juego]\n<al entrar> Hola Ana, bienvenido"
+       ],
+       "note": "En el código se puede escribir `minetest.` o `core.`: son lo mismo. En este curso se usa `minetest.`."
+      },
+      {
+       "title": "mod.conf y dependencias",
+       "text": "`mod.conf` es un archivo de texto con `clave = valor`.\n\n• `name`: nombre del mod (igual que la carpeta).\n• `description`: texto corto.\n• `depends`: mods que deben cargarse antes (separados por coma). Si falta uno, el mundo no carga.\n• `optional_depends`: mods que se usan si están, pero no son obligatorios.\n\nLuanti carga los mods en un orden que respeta las dependencias. Si A depende de B y B de A, hay un ciclo y da error.",
+       "examples": [
+        "$ cat mimod/mod.conf\nname = mimod\ndescription = Agrega un bloque y una herramienta\ndepends = default\noptional_depends = farming, sfinv"
+       ]
+      },
+      {
+       "title": "Nombres: modname:item",
+       "text": "Todo lo que registras (nodos, ítems, entidades) lleva un nombre con el formato `modname:nombre`. El prefijo evita choques con otros mods: `mimod:bloque` nunca se confunde con `otro:bloque`.\n\nReglas: solo minúsculas, números y guion bajo. Con dos puntos delante (`\":default:stone\"`) le dices a Luanti que sobrescriba un nombre de otro mod en vez de usar tu prefijo.\n\nCon `minetest.register_alias(\"mimod:viejo\", \"mimod:nuevo\")` mantienes compatibilidad si renombras algo.",
+       "examples": [
+        "$ cat mimod/init.lua\nlocal modname = minetest.get_current_modname()\nprint(modname)\nprint(minetest.get_modpath(\"mimod\"))\n[en la consola]\nmimod\n/…/mods/mimod"
+       ]
+      },
+      {
+       "title": "Depurar: debug.txt y dump",
+       "text": "Cuando algo falla, lo primero es mirar el final de `debug.txt` (carpeta de datos) o la consola. Un error de sintaxis en `init.lua` impide cargar el mundo y muestra el archivo y la línea.\n\nHerramientas de depuración:\n\n• `print(texto)`: escribe en la consola.\n• `minetest.log(\"action\", texto)`: escribe en el registro con nivel.\n• `dump(tabla)`: convierte una tabla en texto legible (muy útil).\n• `minetest.chat_send_all(texto)`: lo ves dentro del juego.",
+       "examples": [
+        "$ tail -n 3 debug.txt\n2026-11-10 20:15:03: ACTION[Server]: [mimod] mod cargado\nERROR[Main]: ModError: Failed to load and run script from /…/mods/mimod/init.lua:\n/…/mods/mimod/init.lua:4: '=' expected near 'x'"
+       ],
+       "note": "Los tiempos y rutas de ese ejemplo son ilustrativos; el formato real es similar."
+      }
+     ]
+    },
+    {
+     "title": "Nivel 2 · Nodos, ítems y recetas",
+     "description": "Crear bloques, herramientas y sus recetas de crafteo.",
+     "sections": [
+      {
+       "title": "register_node",
+       "text": "Un nodo es un bloque del mundo. Se crea con `minetest.register_node(nombre, definición)`. La definición es una tabla. Lo mínimo útil:\n\n• `description`: el nombre que ve el jugador.\n• `tiles`: lista de texturas (archivos de `textures/`).\n• `groups`: cómo se rompe y qué es (ver más abajo).",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_node(\"mimod:bloque\", {\n    description = \"Mi bloque\",\n    tiles = {\"mimod_bloque.png\"},\n    groups = {cracky = 3},\n})\n[en el juego]\nAparece en el inventario creativo con el nombre «Mi bloque»."
+       ],
+       "note": "Con `/give singleplayer mimod:bloque` (o tu nombre) lo recibes si tienes permiso `give`. Necesitas la textura `textures/mimod_bloque.png` o verás un bloque con una imagen de error."
+      },
+      {
+       "title": "tiles: texturas por cara",
+       "text": "`tiles` acepta 1, 2, 3 o 6 texturas. Orden de las 6: arriba, abajo, derecha, izquierda, atrás, frente.\n\n• 1 textura: todas las caras iguales.\n• 2 texturas: la primera para arriba y la segunda para todas las demás caras (la última textura se repite en las caras que faltan).\n• 3 texturas: arriba, abajo y laterales.\n• 6 texturas: una por cara.\n\nÚtil para troncos (anillos arriba y abajo, corteza a los lados) o hierba.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_node(\"mimod:tronco\", {\n    description = \"Tronco\",\n    tiles = {\n        \"mimod_tronco_arriba.png\",\n        \"mimod_tronco_arriba.png\",\n        \"mimod_tronco_lado.png\",\n    },\n    groups = {choppy = 2},\n})"
+       ]
+      },
+      {
+       "title": "groups: cómo se rompe y qué es",
+       "text": "`groups` es un diccionario `grupo = nivel`. Define cómo se cava y a qué familia pertenece.\n\nGrupos de cavado: `cracky` (piedra, se rompe con pico), `crumbly` (tierra, pala), `choppy` (madera, hacha), `snappy` (hojas, cosas blandas) y `oddly_breakable_by_hand` (se rompe a mano). El número va de 1 (fácil) a 3 (difícil).\n\nOtros grupos describen el tipo de nodo, como `stone`, `wood` o `flammable`. Las recetas pueden pedir un grupo entero (`group:wood`).",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_node(\"mimod:tablon\", {\n    description = \"Tablón\",\n    tiles = {\"mimod_tablon.png\"},\n    groups = {choppy = 2, oddly_breakable_by_hand = 2, wood = 1, flammable = 2},\n})"
+       ]
+      },
+      {
+       "title": "Propiedades útiles de nodos",
+       "text": "Algunas claves de la definición que cambian el comportamiento:\n\n• `light_source = 0 a 14`: emite luz.\n• `walkable = false`: se puede atravesar.\n• `climbable = true`: se puede trepar (escaleras).\n• `drop = \"otro:item\"`: qué suelta al romperse (o `\"\"` para nada).\n• `sounds`: sonidos al caminar, picar, etc.\n• `damage_per_second`: daño al estar dentro.\n• `paramtype = \"light\"`: deja pasar la luz (necesario para bloques transparentes o con forma).",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_node(\"mimod:lampara\", {\n    description = \"Lámpara\",\n    tiles = {\"mimod_lampara.png\"},\n    light_source = 12,\n    groups = {cracky = 3, oddly_breakable_by_hand = 3},\n    drop = \"mimod:lampara\",\n})\n\nminetest.register_node(\"mimod:humo\", {\n    description = \"Humo\",\n    drawtype = \"airlike\",\n    paramtype = \"light\",\n    walkable = false,\n    pointable = false,\n    sunlight_propagates = true,\n})"
+       ],
+       "note": "Si usas el mod `default` de Minetest Game, `sounds = default.node_sound_stone_defaults()` pone sonidos de piedra. Requiere `depends = default`."
+      },
+      {
+       "title": "Formas: drawtype y nodebox",
+       "text": "`drawtype` cambia cómo se dibuja un nodo: `normal` (cubo), `glasslike` (vidrio), `plantlike` (planta en cruz), `torchlike`, `airlike` (invisible), `mesh` (modelo 3D) y `nodebox` (cajas que tú defines).\n\nUn `nodebox` es una lista de cajas `{x1, y1, z1, x2, y2, z2}` con valores de -0.5 a 0.5 (el cubo completo). Este ejemplo es una losa: la mitad de abajo.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_node(\"mimod:losa\", {\n    description = \"Losa\",\n    tiles = {\"mimod_bloque.png\"},\n    drawtype = \"nodebox\",\n    paramtype = \"light\",\n    node_box = {\n        type = \"fixed\",\n        fixed = {-0.5, -0.5, -0.5, 0.5, 0, 0.5},\n    },\n    groups = {cracky = 3},\n})"
+       ],
+       "note": "Con `paramtype2 = \"facedir\"` el nodo puede rotarse al colocarlo."
+      },
+      {
+       "title": "Ítems y herramientas",
+       "text": "Un ítem que no se coloca como bloque se registra con `register_craftitem`. Una herramienta con `register_tool`, donde `tool_capabilities` define qué puede romper y cuánto tarda.\n\n`groupcaps` indica, por grupo, los tiempos para cada nivel (`times`), los usos (`uses`) y el nivel máximo que puede cavar (`maxlevel`). `damage_groups` es el daño que hace a seres vivos.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_craftitem(\"mimod:lingote\", {\n    description = \"Lingote\",\n    inventory_image = \"mimod_lingote.png\",\n})\n\nminetest.register_tool(\"mimod:pico\", {\n    description = \"Pico\",\n    inventory_image = \"mimod_pico.png\",\n    tool_capabilities = {\n        full_punch_interval = 1.0,\n        max_drop_level = 1,\n        groupcaps = {\n            cracky = {times = {[1] = 4.0, [2] = 2.0, [3] = 1.0}, uses = 20, maxlevel = 2},\n        },\n        damage_groups = {fleshy = 2},\n    },\n})"
+       ]
+      },
+      {
+       "title": "Recetas de crafteo",
+       "text": "`minetest.register_craft` crea recetas. Tipos:\n\n• Con forma (por defecto): una cuadrícula de filas; `\"\"` es un hueco vacío.\n• `type = \"shapeless\"`: sin forma, solo importan los ingredientes.\n• `type = \"cooking\"`: se cocina en un horno (con `cooktime` en segundos).\n• `type = \"fuel\"`: sirve de combustible (con `burntime`).\n\nUn grupo se pide como `\"group:wood\"`. `output` puede llevar cantidad: `\"mimod:pico 2\"`.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_craft({\n    output = \"mimod:pico\",\n    recipe = {\n        {\"mimod:lingote\", \"mimod:lingote\", \"mimod:lingote\"},\n        {\"\", \"group:stick\", \"\"},\n        {\"\", \"group:stick\", \"\"},\n    },\n})\n\nminetest.register_craft({\n    type = \"shapeless\",\n    output = \"mimod:lingote 2\",\n    recipe = {\"mimod:bloque\"},\n})\n\nminetest.register_craft({\n    type = \"cooking\",\n    output = \"mimod:lingote\",\n    recipe = \"mimod:mena\",\n    cooktime = 5,\n})\n[en el juego]\nPico = 3 lingotes arriba y 2 palos en columna al centro."
+       ]
+      }
+     ]
+    },
+    {
+     "title": "Nivel 3 · Eventos e interacción",
+     "description": "Hacer que el mundo y los jugadores respondan a lo que pasa.",
+     "sections": [
+      {
+       "title": "Callbacks de nodos",
+       "text": "Dentro de la definición de un nodo puedes poner funciones que Luanti llama cuando pasa algo:\n\n• `on_punch(pos, node, puncher, pointed_thing)`: al golpearlo.\n• `on_rightclick(pos, node, clicker, itemstack, pointed_thing)`: al hacer clic derecho.\n• `after_place_node(pos, placer, itemstack, pointed_thing)`: después de colocarlo.\n• `on_construct(pos)`: cuando aparece en el mundo, de cualquier forma.\n• `can_dig(pos, player)`: devuelve `false` para impedir que se rompa.\n• `after_dig_node(pos, oldnode, oldmetadata, digger)`: después de romperlo.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_node(\"mimod:saludador\", {\n    description = \"Saludador\",\n    tiles = {\"mimod_saludador.png\"},\n    groups = {cracky = 3},\n    on_rightclick = function(pos, node, clicker)\n        local nombre = clicker:get_player_name()\n        minetest.chat_send_player(nombre, \"¡Hola \" .. nombre .. \"!\")\n    end,\n})\n[en el juego]\n<clic derecho sobre el bloque> ¡Hola Ana!"
+       ]
+      },
+      {
+       "title": "Eventos globales",
+       "text": "Con las funciones `minetest.register_on_...` registras código que se ejecuta ante eventos de todo el servidor:\n\n• `register_on_joinplayer(function(player, last_login))`: alguien entra.\n• `register_on_leaveplayer(function(player, timed_out))`: alguien sale.\n• `register_on_chat_message(function(name, message))`: alguien escribe en el chat. Devuelve `true` para que el mensaje no se envíe.\n• `register_on_dignode`, `register_on_placenode`: se rompe o coloca un bloque.\n• `register_on_dieplayer(function(player, reason))`: muere un jugador.\n• `register_on_respawnplayer(function(player))`: renace. Devuelve `true` para evitar el renacer normal.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_on_joinplayer(function(player)\n    minetest.chat_send_all(player:get_player_name() .. \" entró al servidor\")\nend)\n\nminetest.register_on_chat_message(function(name, message)\n    if message:find(\"spam\") then\n        minetest.chat_send_player(name, \"Esa palabra no está permitida\")\n        return true\n    end\nend)\n[en el juego]\n<al entrar Ana> Ana entró al servidor"
+       ]
+      },
+      {
+       "title": "Comandos de chat",
+       "text": "`minetest.register_chatcommand(nombre, definición)` crea un comando que se usa con `/nombre`. La función `func(name, param)` recibe quién lo usó y el texto que escribió después.\n\nDebe devolver `true` o `false` (éxito o fallo) y opcionalmente un mensaje que se muestra a quien lo usó. Con `privs` exiges permisos.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_chatcommand(\"saludar\", {\n    params = \"<nombre>\",\n    description = \"Saluda a alguien\",\n    privs = {},\n    func = function(name, param)\n        if param == \"\" then\n            return false, \"Uso: /saludar <nombre>\"\n        end\n        return true, \"Hola \" .. param\n    end,\n})\n[en el juego]\n/saludar\nUso: /saludar <nombre>\n/saludar Luis\nHola Luis"
+       ]
+      },
+      {
+       "title": "Privilegios",
+       "text": "Los privilegios controlan quién puede hacer qué. Los creas con `register_privilege`, los exiges en comandos con `privs`, y los compruebas en el código con `minetest.check_player_privs(nombre, {priv = true})`.\n\nSe dan en el juego con `/grant nombre privilegio`. Con `give_to_singleplayer = false` no se otorga automáticamente en mundos de un solo jugador.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_privilege(\"vip\", {\n    description = \"Puede usar el comando /curar\",\n    give_to_singleplayer = false,\n})\n\nminetest.register_chatcommand(\"curar\", {\n    description = \"Cura tu vida al máximo\",\n    privs = {vip = true},\n    func = function(name)\n        local player = minetest.get_player_by_name(name)\n        if not player then\n            return false, \"Jugador no encontrado\"\n        end\n        player:set_hp(20)\n        return true, \"Te curaste\"\n    end,\n})\n[en el juego]\nSin el privilegio:\nYou don't have permission to run this command (missing privileges: vip)"
+       ]
+      },
+      {
+       "title": "Leer y cambiar el mundo",
+       "text": "Las posiciones son tablas `{x = 0, y = 10, z = 0}`. El módulo `vector` ayuda a operar con ellas (`vector.new`, `vector.add`, `vector.distance`, `vector.round`).\n\n• `minetest.get_node(pos)` devuelve `{name, param1, param2}`. Si la zona no está cargada, el nombre es `\"ignore\"`.\n• `minetest.set_node(pos, {name = \"...\"})` coloca un nodo.\n• `minetest.remove_node(pos)` lo quita.\n• `minetest.swap_node(pos, node)` lo cambia conservando metadatos.\n• `minetest.find_node_near(pos, radio, {nombres})` busca un nodo cercano.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_chatcommand(\"techo\", {\n    description = \"Pone un bloque sobre tu cabeza\",\n    func = function(name)\n        local player = minetest.get_player_by_name(name)\n        if not player then return end\n        local pos = vector.round(player:get_pos())\n        local arriba = vector.add(pos, {x = 0, y = 3, z = 0})\n        if minetest.get_node(arriba).name == \"air\" then\n            minetest.set_node(arriba, {name = \"mimod:bloque\"})\n            return true, \"Techo colocado\"\n        end\n        return false, \"Ya hay algo ahí\"\n    end,\n})\n[en el juego]\n/techo\nTecho colocado"
+       ]
+      },
+      {
+       "title": "Inventarios e ItemStack",
+       "text": "Un `ItemStack` es una pila de ítems: `ItemStack(\"default:apple 5\")`. El inventario de un jugador se obtiene con `player:get_inventory()`, y la lista principal se llama `\"main\"`.\n\n• `inv:add_item(\"main\", stack)` agrega y devuelve lo que no cupo.\n• `inv:contains_item(\"main\", stack)` pregunta si hay suficiente.\n• `inv:remove_item(\"main\", stack)` quita.\n• `player:get_wielded_item()` es lo que tiene en la mano.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_on_newplayer(function(player)\n    local inv = player:get_inventory()\n    inv:add_item(\"main\", ItemStack(\"mimod:pico\"))\n    inv:add_item(\"main\", ItemStack(\"mimod:lingote 10\"))\nend)\n\nminetest.register_chatcommand(\"cobrar\", {\n    description = \"Cobra 5 lingotes\",\n    func = function(name)\n        local inv = minetest.get_player_by_name(name):get_inventory()\n        local precio = ItemStack(\"mimod:lingote 5\")\n        if not inv:contains_item(\"main\", precio) then\n            return false, \"Te faltan lingotes\"\n        end\n        inv:remove_item(\"main\", precio)\n        return true, \"Pagaste 5 lingotes\"\n    end,\n})\n[en el juego]\nJugador nuevo: recibe un pico y 10 lingotes."
+       ]
+      },
+      {
+       "title": "Tiempo: globalstep y after",
+       "text": "• `minetest.after(segundos, función, ...)` ejecuta algo una vez dentro de un rato.\n• `minetest.register_globalstep(function(dtime))` se ejecuta en cada tick del servidor (unas 10 a 20 veces por segundo). `dtime` es el tiempo desde el tick anterior.\n\nCuidado con el `globalstep`: lo que pongas ahí corre todo el tiempo. Acumula `dtime` para actuar cada cierto intervalo y no hagas trabajo pesado en cada tick.",
+       "examples": [
+        "$ cat mimod/init.lua\nlocal acumulado = 0\n\nminetest.register_globalstep(function(dtime)\n    acumulado = acumulado + dtime\n    if acumulado < 5 then\n        return\n    end\n    acumulado = 0\n    minetest.chat_send_all(\"Han pasado 5 segundos\")\nend)\n\nminetest.after(2, function()\n    minetest.chat_send_all(\"Esto sale una sola vez, a los 2 segundos\")\nend)\n[en el juego]\n(a los 2 s) Esto sale una sola vez, a los 2 segundos\n(cada 5 s) Han pasado 5 segundos"
+       ]
+      }
+     ]
+    },
+    {
+     "title": "Nivel 4 · Mundo y generación",
+     "description": "Hacer que el mundo cambie solo y que aparezcan recursos.",
+     "sections": [
+      {
+       "title": "ABM: bloques que cambian solos",
+       "text": "Un ABM (Active Block Modifier) recorre periódicamente los nodos de ciertos tipos y ejecuta código sobre ellos. Sirve para que crezca pasto, se seque algo, se propague fuego, etc.\n\n• `nodenames`: qué nodos revisa.\n• `neighbors`: solo actúa si hay alguno de estos nodos al lado (opcional).\n• `interval`: cada cuántos segundos revisa.\n• `chance`: probabilidad de 1 en N de actuar sobre cada nodo.\n• `action(pos, node)`: lo que hace.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_abm({\n    label = \"Musgo crece junto al agua\",\n    nodenames = {\"mimod:piedra\"},\n    neighbors = {\"default:water_source\"},\n    interval = 10,\n    chance = 20,\n    action = function(pos, node)\n        minetest.set_node(pos, {name = \"mimod:piedra_musgo\"})\n    end,\n})"
+       ],
+       "note": "Un ABM mal hecho es la causa más común de lag en servidores. Usa `interval` alto, `chance` alto y `neighbors` para que revise lo menos posible."
+      },
+      {
+       "title": "LBM y timers de nodo",
+       "text": "Un LBM (Loading Block Modifier) se ejecuta una vez sobre los nodos cuando se carga su zona del mapa. Sirve para reparar o actualizar nodos viejos. Necesita un `name` único.\n\nUn timer de nodo es una cuenta regresiva propia de un nodo: `minetest.get_node_timer(pos):start(segundos)`. Al terminar se llama `on_timer(pos, elapsed)` de la definición del nodo. Si esa función devuelve `true`, el timer se reinicia. Es más eficiente que un ABM para acciones puntuales.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_node(\"mimod:semilla\", {\n    description = \"Semilla\",\n    tiles = {\"mimod_semilla.png\"},\n    groups = {oddly_breakable_by_hand = 3},\n    on_construct = function(pos)\n        minetest.get_node_timer(pos):start(30)\n    end,\n    on_timer = function(pos, elapsed)\n        minetest.set_node(pos, {name = \"mimod:planta\"})\n        return false\n    end,\n})\n\nminetest.register_lbm({\n    label = \"Cambiar nombre viejo\",\n    name = \"mimod:actualizar_viejo\",\n    nodenames = {\"mimod:bloque_viejo\"},\n    run_at_every_load = false,\n    action = function(pos, node)\n        minetest.set_node(pos, {name = \"mimod:bloque\"})\n    end,\n})\n[en el juego]\nLa semilla se convierte en planta a los 30 segundos de colocarla."
+       ]
+      },
+      {
+       "title": "Menas con register_ore",
+       "text": "`minetest.register_ore` hace que un nodo aparezca al generar el terreno. Tipo `scatter`: grupos de nodos repartidos en la roca.\n\n• `wherein`: dentro de qué nodo aparece.\n• `clust_scarcity`: cada cuántos nodos hay un grupo (más alto = más raro).\n• `clust_num_ores`: cantidad de nodos por grupo.\n• `clust_size`: tamaño del grupo.\n• `y_min` / `y_max`: altura donde aparece.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_ore({\n    ore_type = \"scatter\",\n    ore = \"mimod:mena\",\n    wherein = \"default:stone\",\n    clust_scarcity = 12 * 12 * 12,\n    clust_num_ores = 5,\n    clust_size = 3,\n    y_max = -20,\n    y_min = -500,\n})\n[en el juego]\nSolo se genera en terreno nuevo. Para verla, explora una zona que no hayas visitado."
+       ],
+       "note": "Los cambios de generación no afectan lo ya generado. Para probarlos, crea un mundo nuevo."
+      },
+      {
+       "title": "Árboles y decoraciones",
+       "text": "`minetest.register_decoration` pone cosas sobre el terreno al generarlo: flores, pasto, árboles.\n\n• `deco_type = \"simple\"`: un solo nodo (flores, pasto).\n• `deco_type = \"schematic\"`: una estructura guardada (árboles, casas), con `schematic = ruta`.\n• `place_on`: sobre qué nodo va.\n• `fill_ratio`: densidad (0.01 es poco, 0.1 es mucho).\n• `y_min` / `y_max`: alturas permitidas.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_decoration({\n    deco_type = \"simple\",\n    place_on = {\"default:dirt_with_grass\"},\n    sidelen = 16,\n    fill_ratio = 0.02,\n    y_min = 1,\n    y_max = 120,\n    decoration = \"mimod:flor\",\n})"
+       ]
+      },
+      {
+       "title": "Biomas y alias de mapgen",
+       "text": "Un bioma define el aspecto del terreno según temperatura (`heat_point`) y humedad (`humidity_point`): qué nodo va arriba (`node_top`), cuánto espesor tiene (`depth_top`) y el relleno (`node_filler`).\n\nLos alias `mapgen_*` le dicen al generador qué nodos usar para piedra y agua. Un juego propio debe definirlos; un mod normal no.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_biome({\n    name = \"mimod_desierto\",\n    node_top = \"default:sand\",\n    depth_top = 3,\n    node_filler = \"default:sandstone\",\n    depth_filler = 8,\n    y_min = 4,\n    y_max = 200,\n    heat_point = 90,\n    humidity_point = 10,\n})\n\nminetest.register_alias(\"mapgen_stone\", \"default:stone\")\nminetest.register_alias(\"mapgen_water_source\", \"default:water_source\")\nminetest.register_alias(\"mapgen_river_water_source\", \"default:river_water_source\")"
+       ]
+      },
+      {
+       "title": "VoxelManip: cambiar mucho terreno rápido",
+       "text": "Cambiar miles de nodos con `set_node` es lento. `VoxelManip` lee una zona entera a la memoria, la modificas ahí y la escribes de golpe. Es la herramienta de los mapgens y de herramientas tipo \"rellenar\".\n\nPasos: leer con `read_from_map`, obtener los datos con `get_data`, crear una `VoxelArea` para calcular índices, cambiar `data[i]` con IDs de contenido (`minetest.get_content_id`), y guardar con `set_data` y `write_to_map`.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_chatcommand(\"llenar\", {\n    description = \"Llena un cubo de 5x5x5 de piedra a tu lado\",\n    func = function(name)\n        local pos = vector.round(minetest.get_player_by_name(name):get_pos())\n        local p1 = vector.add(pos, {x = 2, y = 0, z = 2})\n        local p2 = vector.add(pos, {x = 6, y = 4, z = 6})\n\n        local vm = VoxelManip()\n        local emin, emax = vm:read_from_map(p1, p2)\n        local area = VoxelArea:new({MinEdge = emin, MaxEdge = emax})\n        local data = vm:get_data()\n        local piedra = minetest.get_content_id(\"default:stone\")\n\n        for z = p1.z, p2.z do\n            for y = p1.y, p2.y do\n                for x = p1.x, p2.x do\n                    data[area:index(x, y, z)] = piedra\n                end\n            end\n        end\n\n        vm:set_data(data)\n        vm:write_to_map(true)\n        return true, \"Listo\"\n    end,\n})\n[en el juego]\n/llenar\nListo"
+       ]
+      }
+     ]
+    },
+    {
+     "title": "Nivel 5 · Entidades y jugadores",
+     "description": "Objetos que se mueven y control del jugador.",
+     "sections": [
+      {
+       "title": "Entidades",
+       "text": "Una entidad es un objeto que se mueve libremente por el mundo (mobs, proyectiles, objetos soltados). Se define con `minetest.register_entity` y se crea con `minetest.add_entity(pos, nombre)`.\n\nCallbacks principales: `on_activate(self, staticdata, dtime_s)` al aparecer, `on_step(self, dtime)` en cada tick, `on_punch(self, puncher, ...)` al golpearla y `on_rightclick(self, clicker)`. `self.object` es la referencia al objeto del juego.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_entity(\"mimod:bola\", {\n    initial_properties = {\n        visual = \"sprite\",\n        textures = {\"mimod_bola.png\"},\n        visual_size = {x = 0.5, y = 0.5},\n        physical = false,\n        collisionbox = {-0.2, -0.2, -0.2, 0.2, 0.2, 0.2},\n    },\n    on_activate = function(self, staticdata, dtime_s)\n        self.vida = 0\n    end,\n    on_step = function(self, dtime)\n        self.vida = self.vida + dtime\n        if self.vida > 5 then\n            self.object:remove()\n        end\n    end,\n})\n\nminetest.register_chatcommand(\"bola\", {\n    func = function(name)\n        local pos = minetest.get_player_by_name(name):get_pos()\n        pos.y = pos.y + 2\n        minetest.add_entity(pos, \"mimod:bola\")\n        return true, \"Bola creada\"\n    end,\n})\n[en el juego]\nAparece una bola sobre ti y desaparece a los 5 segundos."
+       ]
+      },
+      {
+       "title": "Mover entidades",
+       "text": "El movimiento se controla con la referencia `self.object`:\n\n• `get_pos()` / `set_pos(pos)`: posición.\n• `set_velocity(vec)`: velocidad (bloques por segundo).\n• `set_acceleration(vec)`: aceleración (por ejemplo, gravedad `{x=0,y=-10,z=0}`).\n• `set_yaw(radianes)`: hacia dónde mira.\n\nCon `physical = true` la entidad choca con el terreno. Para mobs sencillos, cada cierto tiempo elige una dirección y le da velocidad.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_entity(\"mimod:caminante\", {\n    initial_properties = {\n        visual = \"sprite\",\n        textures = {\"mimod_caminante.png\"},\n        physical = true,\n        collisionbox = {-0.3, -0.5, -0.3, 0.3, 0.5, 0.3},\n    },\n    on_activate = function(self)\n        self.object:set_acceleration({x = 0, y = -10, z = 0})\n        self.t = 0\n    end,\n    on_step = function(self, dtime)\n        self.t = self.t + dtime\n        if self.t < 3 then\n            return\n        end\n        self.t = 0\n        local vel = self.object:get_velocity()\n        self.object:set_velocity({\n            x = math.random(-2, 2),\n            y = vel.y,\n            z = math.random(-2, 2),\n        })\n    end,\n})"
+       ]
+      },
+      {
+       "title": "Interactuar con entidades",
+       "text": "`on_punch(self, puncher, time_from_last_punch, tool_capabilities, dir, damage)` se llama cuando alguien golpea la entidad. `on_rightclick(self, clicker)` con clic derecho.\n\nPara buscar entidades u objetos cerca: `minetest.get_objects_inside_radius(pos, radio)`. Cada objeto puede ser un jugador (`obj:is_player()`) o una entidad (`obj:get_luaentity()` devuelve su tabla Lua).",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_entity(\"mimod:cofre_vivo\", {\n    initial_properties = {\n        visual = \"sprite\",\n        textures = {\"mimod_cofre_vivo.png\"},\n        hp_max = 5,\n    },\n    on_rightclick = function(self, clicker)\n        minetest.chat_send_player(clicker:get_player_name(), \"¡No me toques!\")\n    end,\n    on_punch = function(self, puncher)\n        minetest.chat_send_player(puncher:get_player_name(), \"¡Ay!\")\n    end,\n})\n\nminetest.register_chatcommand(\"cuantos\", {\n    func = function(name)\n        local pos = minetest.get_player_by_name(name):get_pos()\n        local total = 0\n        for _, obj in ipairs(minetest.get_objects_inside_radius(pos, 10)) do\n            if not obj:is_player() then\n                total = total + 1\n            end\n        end\n        return true, \"Entidades a 10 bloques: \" .. total\n    end,\n})"
+       ]
+      },
+      {
+       "title": "La API del jugador",
+       "text": "El jugador es un `ObjectRef` con muchos métodos útiles:\n\n• `get_pos()`, `set_pos(pos)`, `get_look_dir()`.\n• `get_hp()`, `set_hp(n)`.\n• `get_player_name()`, `get_inventory()`, `get_meta()`.\n• `get_player_control()`: qué teclas aprieta (`jump`, `sneak`, `up`...).\n• `set_physics_override({speed = 2, jump = 1.5, gravity = 0.5})`: cambia cómo se mueve.\n• `set_properties({...})`: cambia modelo, tamaño, textura.\n• `set_sky(...)`: cambia el cielo solo para él.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_chatcommand(\"rapido\", {\n    description = \"Alterna súper velocidad\",\n    func = function(name)\n        local player = minetest.get_player_by_name(name)\n        local fisica = player:get_physics_override()\n        if fisica.speed == 1 then\n            player:set_physics_override({speed = 2.5, jump = 1.5})\n            return true, \"Velocidad aumentada\"\n        end\n        player:set_physics_override({speed = 1, jump = 1})\n        return true, \"Velocidad normal\"\n    end,\n})\n[en el juego]\n/rapido\nVelocidad aumentada\n/rapido\nVelocidad normal"
+       ]
+      },
+      {
+       "title": "HUD: texto e imágenes en pantalla",
+       "text": "El HUD son los elementos fijos en la pantalla del jugador. Se agregan con `player:hud_add(definición)`, que devuelve un ID; con ese ID se cambia (`hud_change`) o se quita (`hud_remove`).\n\n• `hud_elem_type`: `\"text\"`, `\"image\"`, `\"statbar\"`, `\"waypoint\"`...\n• `position`: lugar en la pantalla como fracción (`{x = 0.5, y = 0.9}` es abajo al centro).\n• `offset`: ajuste en píxeles.\n• `text`: el texto o la imagen.\n• `number`: color del texto en hexadecimal.",
+       "examples": [
+        "$ cat mimod/init.lua\nlocal huds = {}\n\nminetest.register_on_joinplayer(function(player)\n    huds[player:get_player_name()] = player:hud_add({\n        hud_elem_type = \"text\",\n        position = {x = 0.5, y = 0.95},\n        offset = {x = 0, y = 0},\n        text = \"Puntos: 0\",\n        number = 0xFFFFFF,\n        alignment = {x = 0, y = 0},\n    })\nend)\n\nminetest.register_on_leaveplayer(function(player)\n    huds[player:get_player_name()] = nil\nend)\n\nfunction mimod_set_puntos(player, n)\n    local id = huds[player:get_player_name()]\n    if id then\n        player:hud_change(id, \"text\", \"Puntos: \" .. n)\n    end\nend\n[en el juego]\nAparece «Puntos: 0» abajo, en el centro de la pantalla."
+       ]
+      },
+      {
+       "title": "Sonidos y partículas",
+       "text": "`minetest.sound_play(nombre, opciones)` reproduce un sonido de la carpeta `sounds/` (archivos `.ogg`; se escribe el nombre sin extensión). Con `pos` suena en un lugar y con `to_player` solo para un jugador.\n\nLas partículas: `minetest.add_particle` crea una sola y `minetest.add_particlespawner` genera muchas durante un tiempo. Ambas usan texturas de `textures/`.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_chatcommand(\"pop\", {\n    func = function(name)\n        local pos = minetest.get_player_by_name(name):get_pos()\n        minetest.sound_play(\"mimod_pop\", {pos = pos, gain = 0.8, max_hear_distance = 20})\n        minetest.add_particlespawner({\n            amount = 30,\n            time = 0.5,\n            minpos = pos,\n            maxpos = pos,\n            minvel = {x = -2, y = 2, z = -2},\n            maxvel = {x = 2, y = 4, z = 2},\n            minacc = {x = 0, y = -8, z = 0},\n            maxacc = {x = 0, y = -8, z = 0},\n            minexptime = 0.5,\n            maxexptime = 1,\n            minsize = 1,\n            maxsize = 2,\n            texture = \"mimod_particula.png\",\n        })\n    end,\n})\n[en el juego]\nArchivos: sounds/mimod_pop.ogg y textures/mimod_particula.png"
+       ]
+      },
+      {
+       "title": "Raycast: armas y disparos",
+       "text": "`minetest.raycast(inicio, fin, objetos, líquidos)` lanza un rayo y devuelve lo que toca, en orden. Cada resultado tiene `type` (`\"node\"` u `\"object\"`), `under` (posición del nodo) o `ref` (el objeto).\n\nCon eso se hacen armas de disparo instantáneo: se traza el rayo desde los ojos del jugador en la dirección en que mira, y se aplica daño al primer objeto golpeado con `obj:punch(...)` o `set_hp`.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_tool(\"mimod:pistola\", {\n    description = \"Pistola\",\n    inventory_image = \"mimod_pistola.png\",\n    on_use = function(itemstack, user)\n        local inicio = vector.add(user:get_pos(), {x = 0, y = 1.5, z = 0})\n        local fin = vector.add(inicio, vector.multiply(user:get_look_dir(), 50))\n        for punto in minetest.raycast(inicio, fin, true, false) do\n            if punto.type == \"object\" and punto.ref ~= user then\n                punto.ref:punch(user, 1.0, {damage_groups = {fleshy = 4}}, nil)\n                break\n            elseif punto.type == \"node\" then\n                break\n            end\n        end\n        return itemstack\n    end,\n})\n[en el juego]\nClick: el rayo daña al primer jugador o entidad en la línea de visión, si no hay un bloque en medio."
+       ]
+      }
+     ]
+    },
+    {
+     "title": "Nivel 6 · Interfaces y datos",
+     "description": "Menús (formspecs), metadatos y guardar información.",
+     "sections": [
+      {
+       "title": "Formspec básico",
+       "text": "Un formspec es una interfaz descrita con texto. Cada elemento va entre corchetes con sus datos separados por `;`. Se muestra con `minetest.show_formspec(nombre, \"mimod:form\", texto)`.\n\nCuando el jugador interactúa, Luanti llama a `minetest.register_on_player_receive_fields(function(player, formname, fields))`. `fields` contiene los valores de los campos y el botón que se apretó. Siempre revisa `formname`, porque llegan los eventos de todos los formularios.",
+       "examples": [
+        "$ cat mimod/init.lua\nlocal function abrir(name)\n    local fs = \"size[8,4]\" ..\n        \"bgcolor[#0c0c0cCC;true]\" ..\n        \"label[0.5,0.5;Escribe tu nombre]\" ..\n        \"field[0.8,1.8;7,1;nombre;;]\" ..\n        \"button_exit[2.5,3;3,1;ok;Aceptar]\"\n    minetest.show_formspec(name, \"mimod:saludo\", fs)\nend\n\nminetest.register_chatcommand(\"menu\", {\n    func = function(name)\n        abrir(name)\n    end,\n})\n\nminetest.register_on_player_receive_fields(function(player, formname, fields)\n    if formname ~= \"mimod:saludo\" then\n        return\n    end\n    if fields.ok and fields.nombre and fields.nombre ~= \"\" then\n        minetest.chat_send_player(player:get_player_name(), \"Hola \" .. fields.nombre)\n    end\nend)\n[en el juego]\n/menu → ventana con un campo; al escribir «Luis» y tocar Aceptar: Hola Luis"
+       ],
+       "note": "Usa las coordenadas clásicas (sin `formspec_version[4]`). En Android, `formspec_version[4]` o superior puede dar problemas de zoom; las coordenadas clásicas se ven bien."
+      },
+      {
+       "title": "Elementos de formspec",
+       "text": "Los más usados (coordenadas `x,y` y tamaño `ancho,alto`):\n\n• `label[x,y;texto]`.\n• `button[x,y;ancho,alto;nombre;texto]` y `button_exit[...]` (cierra el formulario).\n• `field[x,y;ancho,alto;nombre;etiqueta;valor]` y `textarea[...]`.\n• `checkbox[x,y;nombre;texto;activado]`.\n• `dropdown[x,y;ancho;nombre;op1,op2,op3;indice]`.\n• `textlist[x,y;ancho,alto;nombre;op1,op2;seleccionado]`.\n• `image[x,y;ancho,alto;textura]` e `item_image[x,y;ancho,alto;item]`.\n• `box[x,y;ancho,alto;color]`.\n• `tabheader[x,y;nombre;pestaña1,pestaña2;actual]`.\n\nSi insertas texto del usuario dentro de un formspec, pásalo antes por `minetest.formspec_escape(texto)`.",
+       "examples": [
+        "$ cat mimod/init.lua\nlocal function lista(name, items)\n    local seguros = {}\n    for i, t in ipairs(items) do\n        seguros[i] = minetest.formspec_escape(t)\n    end\n    return \"size[8,6]\" ..\n        \"bgcolor[#0c0c0cCC;true]\" ..\n        \"textlist[0.3,0.3;7.2,4.5;sel;\" .. table.concat(seguros, \",\") .. \";1]\" ..\n        \"checkbox[0.3,5;solo;Solo recientes;false]\" ..\n        \"button_exit[5,5.2;2.5,1;cerrar;Cerrar]\"\nend\n\nminetest.register_chatcommand(\"lista\", {\n    func = function(name)\n        minetest.show_formspec(name, \"mimod:lista\", lista(name, {\"uno\", \"dos, con coma\", \"tres\"}))\n    end,\n})\n\nminetest.register_on_player_receive_fields(function(player, formname, fields)\n    if formname ~= \"mimod:lista\" or not fields.sel then\n        return\n    end\n    local ev = minetest.explode_textlist_event(fields.sel)\n    if ev.type == \"CHG\" then\n        minetest.chat_send_player(player:get_player_name(), \"Elegiste el \" .. ev.index)\n    end\nend)\n[en el juego]\nAl tocar un elemento de la lista: Elegiste el 2"
+       ]
+      },
+      {
+       "title": "Inventarios en nodos (cofres)",
+       "text": "Un nodo puede tener su propio inventario guardado en sus metadatos. Se crea en `on_construct` con `get_inventory():set_size(\"main\", cantidad)` y se muestra con un formspec guardado en el metadato `formspec`.\n\nEn el formspec, `list[context;main;x,y;columnas,filas;]` muestra el inventario del propio nodo y `list[current_player;main;...]` el del jugador. `listring[]` permite mover ítems con clic rápido entre ambos.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_node(\"mimod:caja\", {\n    description = \"Caja\",\n    tiles = {\"mimod_caja.png\"},\n    groups = {choppy = 2, oddly_breakable_by_hand = 2},\n    on_construct = function(pos)\n        local meta = minetest.get_meta(pos)\n        meta:set_string(\"formspec\",\n            \"size[8,9]\" ..\n            \"list[context;main;0,0.3;8,4;]\" ..\n            \"list[current_player;main;0,4.85;8,4;]\" ..\n            \"listring[]\")\n        meta:set_string(\"infotext\", \"Caja\")\n        meta:get_inventory():set_size(\"main\", 32)\n    end,\n    can_dig = function(pos, player)\n        return minetest.get_meta(pos):get_inventory():is_empty(\"main\")\n    end,\n})\n[en el juego]\nClic derecho abre la caja. Solo se puede romper si está vacía."
+       ]
+      },
+      {
+       "title": "Metadatos",
+       "text": "Los metadatos guardan datos extra y sobreviven al reiniciar. Hay tres tipos: de nodo (`minetest.get_meta(pos)`), de ítem (`itemstack:get_meta()`) y de jugador (`player:get_meta()`).\n\nSe usan `set_string` / `get_string`, `set_int` / `get_int` y `set_float` / `get_float`. El valor especial `infotext` en un nodo muestra ese texto al apuntarlo.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_node(\"mimod:contador\", {\n    description = \"Contador\",\n    tiles = {\"mimod_contador.png\"},\n    groups = {cracky = 3},\n    on_construct = function(pos)\n        local meta = minetest.get_meta(pos)\n        meta:set_int(\"veces\", 0)\n        meta:set_string(\"infotext\", \"Usado 0 veces\")\n    end,\n    on_rightclick = function(pos, node, clicker)\n        local meta = minetest.get_meta(pos)\n        local veces = meta:get_int(\"veces\") + 1\n        meta:set_int(\"veces\", veces)\n        meta:set_string(\"infotext\", \"Usado \" .. veces .. \" veces\")\n    end,\n})\n[en el juego]\nAl apuntar el bloque se lee «Usado 3 veces» y el número se conserva al reiniciar el mundo."
+       ]
+      },
+      {
+       "title": "Guardar datos: mod storage y JSON",
+       "text": "Para guardar información global del mod, `minetest.get_mod_storage()` da un almacén propio con `set_string`, `get_string`, `set_int`, `get_int`.\n\nPara estructuras más grandes, `minetest.serialize` / `minetest.deserialize` convierten una tabla en texto y viceversa; `minetest.write_json` / `minetest.parse_json` hacen lo mismo en formato JSON. Los archivos se guardan dentro de la carpeta del mundo (`minetest.get_worldpath()`), que es donde los mods tienen permiso de escribir.",
+       "examples": [
+        "$ cat mimod/init.lua\nlocal storage = minetest.get_mod_storage()\nlocal ruta = minetest.get_worldpath() .. \"/mimod_datos.json\"\n\nminetest.register_on_joinplayer(function(player)\n    local visitas = storage:get_int(\"visitas\") + 1\n    storage:set_int(\"visitas\", visitas)\n    minetest.chat_send_player(player:get_player_name(), \"Visitas al servidor: \" .. visitas)\nend)\n\nlocal function guardar(datos)\n    minetest.safe_file_write(ruta, minetest.write_json(datos))\nend\n\nlocal function cargar()\n    local f = io.open(ruta, \"r\")\n    if not f then\n        return {}\n    end\n    local datos = minetest.parse_json(f:read(\"*a\")) or {}\n    f:close()\n    return datos\nend\n[en el juego]\n<al entrar> Visitas al servidor: 1  (y así sube en cada visita)"
+       ]
+      },
+      {
+       "title": "Ajustes del mod",
+       "text": "Un mod puede leer opciones desde `minetest.conf` con `minetest.settings:get(\"nombre\")` (texto), `get_bool(\"nombre\", valor_por_defecto)` o `get(\"nombre\")` convertido con `tonumber`.\n\nSi agregas un archivo `settingtypes.txt`, esas opciones aparecen en el menú de ajustes del juego. Formato de cada línea: `nombre (Descripción) tipo valor_por_defecto`.",
+       "examples": [
+        "$ cat mimod/settingtypes.txt\n[Mi mod]\nmimod_activo (Activar mi mod) bool true\nmimod_velocidad (Velocidad) float 1.0 0.1 10.0\n$ cat mimod/init.lua\nlocal activo = minetest.settings:get_bool(\"mimod_activo\", true)\nlocal velocidad = tonumber(minetest.settings:get(\"mimod_velocidad\")) or 1.0\n\nif not activo then\n    return\nend\n\nminetest.log(\"action\", \"[mimod] velocidad: \" .. velocidad)"
+       ]
+      },
+      {
+       "title": "Traducciones",
+       "text": "Para que tu mod hable varios idiomas, usa un traductor: `local S = minetest.get_translator(\"mimod\")`, y escribe los textos como `S(\"Hello\")`. Luanti los traduce al idioma del jugador.\n\nLas traducciones van en archivos `.tr` dentro de `locale/`, con el nombre `mimod.es.tr`. La primera línea es `# textdomain: mimod` y cada línea siguiente es `original=traducción`. El texto original (normalmente en inglés) se usa si no hay traducción.",
+       "examples": [
+        "$ cat mimod/init.lua\nlocal S = minetest.get_translator(\"mimod\")\n\nminetest.register_node(\"mimod:bloque\", {\n    description = S(\"Magic Block\"),\n    tiles = {\"mimod_bloque.png\"},\n    groups = {cracky = 3},\n})\n\nminetest.register_chatcommand(\"hola\", {\n    func = function(name)\n        return true, S(\"Hello, @1!\", name)\n    end,\n})\n$ cat mimod/locale/mimod.es.tr\n# textdomain: mimod\nMagic Block=Bloque mágico\nHello, @1!=¡Hola, @1!\n[en el juego]\nCon el juego en español: «Bloque mágico» y «¡Hola, Ana!»"
+       ]
+      }
+     ]
+    },
+    {
+     "title": "Nivel 7 · Mod profesional",
+     "description": "Organización, compatibilidad, rendimiento, seguridad y publicación.",
+     "sections": [
+      {
+       "title": "Organizar el código",
+       "text": "Un mod serio no tiene todo en un solo `init.lua`. Se reparte en archivos que `init.lua` carga con `dofile`:\n\n`dofile(minetest.get_modpath(\"mimod\") .. \"/nodos.lua\")`\n\nTodo se declara `local`, salvo una tabla global con el nombre del mod (`mimod = {}`) que funciona como espacio propio y como API pública para otros mods.",
+       "examples": [
+        "$ ls -R mimod\nmimod:\nREADME.md  init.lua  mod.conf  nodos.lua  items.lua  comandos.lua  textures\n$ cat mimod/init.lua\nmimod = {}\n\nlocal ruta = minetest.get_modpath(\"mimod\")\n\ndofile(ruta .. \"/nodos.lua\")\ndofile(ruta .. \"/items.lua\")\ndofile(ruta .. \"/comandos.lua\")"
+       ]
+      },
+      {
+       "title": "API y compatibilidad con otros mods",
+       "text": "Si otro mod puede usar el tuyo, expón funciones en tu tabla global (`mimod.dar_puntos(player, n)`). Documenta qué hacen.\n\nPara usar otro mod sin obligarlo, ponlo en `optional_depends` y revisa antes: `if minetest.get_modpath(\"default\") then ... end`. Para esperar a que todos los mods hayan cargado y ver los registros completos, usa `minetest.register_on_mods_loaded(function)`.\n\n`minetest.override_item(\"default:stone\", {...})` modifica un ítem ya registrado por otro mod.",
+       "examples": [
+        "$ cat mimod/init.lua\nmimod = {}\n\nfunction mimod.dar_puntos(player, n)\n    local meta = player:get_meta()\n    meta:set_int(\"mimod_puntos\", meta:get_int(\"mimod_puntos\") + n)\nend\n\nif minetest.get_modpath(\"default\") then\n    minetest.override_item(\"default:stone\", {\n        description = \"Piedra (modificada)\",\n    })\nend\n\nminetest.register_on_mods_loaded(function()\n    minetest.log(\"action\", \"[mimod] todos los mods cargados\")\nend)"
+       ]
+      },
+      {
+       "title": "Rendimiento",
+       "text": "Un mod lento hace lagear a todo el servidor. Reglas prácticas:\n\n• Poca lógica en `register_globalstep`: acumula `dtime` y actúa cada cierto tiempo.\n• ABM con `interval` y `chance` altos, y `neighbors` para filtrar.\n• Prefiere timers de nodo a ABM cuando sea posible.\n• Usa `VoxelManip` para cambios masivos.\n• Guarda en `local` las funciones que llamas mucho (`local get_node = minetest.get_node`).\n• No busques objetos (`get_objects_inside_radius`) todos los ticks.\n• Mide con `minetest.get_us_time()`.",
+       "examples": [
+        "$ cat mimod/init.lua\nlocal t0 = minetest.get_us_time()\n\n-- trabajo a medir\nfor i = 1, 10000 do\n    minetest.get_node({x = 0, y = 0, z = 0})\nend\n\nlocal ms = (minetest.get_us_time() - t0) / 1000\nminetest.log(\"action\", \"[mimod] tardó \" .. ms .. \" ms\")"
+       ]
+      },
+      {
+       "title": "Seguridad y robustez",
+       "text": "Reglas para un mod que no se rompa ni se pueda abusar:\n\n• Todo lo que llega de un formspec (`fields`) lo manda el cliente y puede estar falsificado. Valida tipos, rangos y permisos, y nunca asumas que el botón existe.\n• Comprueba privilegios en el servidor, no por esconder botones.\n• `minetest.get_player_by_name(name)` devuelve `nil` si el jugador salió: revísalo siempre.\n• Respeta las protecciones de áreas con `minetest.is_protected(pos, nombre)`, y avisa con `minetest.record_protection_violation(pos, nombre)` si alguien intenta romperlas.\n• El código de mods corre en un entorno seguro: acceso a archivos limitado al mundo. Solo mods marcados en `secure.trusted_mods` pueden pedir más con `minetest.request_insecure_environment()`; evítalo.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_on_player_receive_fields(function(player, formname, fields)\n    if formname ~= \"mimod:comprar\" then\n        return\n    end\n    local name = player:get_player_name()\n    if not minetest.check_player_privs(name, {shop = true}) then\n        return\n    end\n    local cantidad = tonumber(fields.cantidad)\n    if not cantidad or cantidad < 1 or cantidad > 64 or cantidad ~= math.floor(cantidad) then\n        minetest.chat_send_player(name, \"Cantidad inválida\")\n        return\n    end\n    -- seguir con la compra\nend)"
+       ]
+      },
+      {
+       "title": "Publicar en ContentDB",
+       "text": "ContentDB (content.luanti.org) es el catálogo oficial de mods, juegos y paquetes de texturas. Los jugadores lo usan desde el propio menú del juego.\n\nAntes de publicar:\n\n• `mod.conf` con `name`, `description`, `depends` correctos.\n• `README.md` que explique qué hace, cómo se usa y qué dependencias tiene.\n• Una licencia clara (`LICENSE`) para el código y, si son distintas, para los medios (texturas, sonidos). Opciones habituales: MIT o LGPL para código, CC BY-SA o CC0 para imágenes y sonidos.\n• `screenshot.png` (se recomienda proporción 3:2).\n• Repositorio en Git (GitHub, GitLab).\n• Solo usa recursos propios o con licencia compatible. No copies texturas ni sonidos de juegos comerciales.\n\nLuego creas la ficha en ContentDB, indicas el repositorio y publicas versiones (releases) con etiquetas de Git.",
+       "examples": [
+        "$ ls mimod\nLICENSE  README.md  init.lua  mod.conf  screenshot.png  textures\n$ git init\n$ git add .\n$ git commit -m \"Primera versión\"\n$ git tag v1.0.0"
+       ]
+      },
+      {
+       "title": "Checklist para llegar a nivel senior",
+       "text": "Un mod de calidad profesional cumple esto:\n\n• Nada global salvo la tabla del mod; todo lo demás es `local`.\n• Nombres con prefijo en todo lo registrado.\n• Revisa `nil` antes de usar jugadores, nodos y metadatos.\n• No hace trabajo pesado en `globalstep` ni en ABM.\n• Valida todo lo que viene de formspecs y comandos.\n• Respeta protecciones y privilegios.\n• Se puede configurar con `settingtypes.txt`.\n• Textos traducibles con `get_translator`.\n• Tiene README, licencia y capturas.\n• Está probado en un mundo nuevo, con otros mods, y en servidor dedicado.\n• Usa `register_alias` y LBM para no romper mundos viejos cuando actualizas.",
+       "examples": [
+        "$ grep -n \"^[a-z_]* = \" mimod/*.lua\n(si aparece algo global distinto de `mimod = {}`, hay que ponerle `local`)"
+       ]
+      }
+     ]
+    }
+   ],
+   "guides": [
+    {
+     "title": "Dónde van los mods en Android",
+     "text": "Los mods sueltos van dentro de la carpeta `mods/` de los datos de Luanti, y los juegos en `games/`. En Android, con Luanti instalado, esa carpeta suele estar en `Android/data/net.minetest.minetest/files/Minetest/`.\n\nEn Android 10 y anteriores puedes llegar desde Termux (después de `termux-setup-storage`) o con un gestor de archivos. Desde Android 11 la carpeta `Android/data` está restringida y se usa un gestor de archivos compatible.\n\nDespués de copiar el mod, ábrelo desde el mundo: botón \"Configurar\" y marca el mod como activado.",
+     "examples": [
+      "$ termux-setup-storage\n$ cp -r mimod ~/storage/shared/Android/data/net.minetest.minetest/files/Minetest/mods/\n$ ls ~/storage/shared/Android/data/net.minetest.minetest/files/Minetest/mods\nmimod"
+     ]
+    },
+    {
+     "title": "Plantilla de mod lista para copiar",
+     "text": "Un esqueleto limpio para empezar cualquier mod: estructura de carpetas, `mod.conf`, tabla global y archivos separados.\n\nReemplaza `mimod` por el nombre de tu mod en todos los archivos y en los nombres de las texturas.",
+     "examples": [
+      "$ mkdir -p mimod/textures\n$ cd mimod\n$ cat > mod.conf <<'EOF'\nname = mimod\ndescription = Descripción corta del mod\nEOF\n$ cat > init.lua <<'EOF'\n-- mimod | Autor\n-- Descripción corta\n\nmimod = {}\n\nlocal ruta = minetest.get_modpath(\"mimod\")\n\ndofile(ruta .. \"/nodos.lua\")\nEOF\n$ cat > nodos.lua <<'EOF'\nminetest.register_node(\"mimod:bloque\", {\n    description = \"Mi bloque\",\n    tiles = {\"mimod_bloque.png\"},\n    groups = {cracky = 3},\n})\nEOF\n$ ls\ninit.lua  mod.conf  nodos.lua  textures"
+     ]
+    },
+    {
+     "title": "Referencia rápida de la API",
+     "text": "Las funciones que más vas a usar:\n\n• Registro: `register_node`, `register_craftitem`, `register_tool`, `register_craft`, `register_entity`, `register_alias`, `register_ore`, `register_biome`, `register_decoration`, `register_abm`, `register_lbm`.\n• Eventos: `register_on_joinplayer`, `register_on_leaveplayer`, `register_on_dieplayer`, `register_on_respawnplayer`, `register_on_chat_message`, `register_on_dignode`, `register_on_placenode`, `register_globalstep`, `after`.\n• Mundo: `get_node`, `set_node`, `remove_node`, `swap_node`, `get_meta`, `get_node_timer`, `find_node_near`, `raycast`, `add_entity`.\n• Jugador: `get_player_by_name`, `get_connected_players`, `chat_send_player`, `chat_send_all`, `show_formspec`.\n• Datos: `get_mod_storage`, `serialize`, `deserialize`, `write_json`, `parse_json`, `settings`.\n• Utilidades: `vector.*`, `dump`, `log`, `formspec_escape`, `get_modpath`, `get_worldpath`.\n\nLa referencia completa es el archivo `lua_api.md` que viene con Luanti y la documentación oficial. Cuando una función nueva no existe, revisa la versión de tu Luanti.",
+     "examples": [
+      "$ ls ~/luanti/doc\nlua_api.md  menu_lua_api.md  texture_packs.md  world_format.md"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "juego",
+   "title": "Juego",
+   "description": "Crea un juego completo desde cero con tus propias reglas.",
+   "levels": [
+    {
+     "title": "Nivel 1 · Fundamentos de un juego",
+     "description": "Qué es un juego en Luanti y cómo se organiza.",
+     "sections": [
+      {
+       "title": "Juego, mod y motor",
+       "text": "Un juego (game) es el paquete que le da contenido al motor: bloques, ítems, recetas, mundo, reglas. No es un mod; es el \"sistema\" dentro del cual corren los mods.\n\nDiferencias clave:\n\n• Un mod se agrega a un mundo y depende de lo que haya en el juego.\n• Un juego trae sus propios mods, su menú, sus ajustes y su identidad.\n• Un mundo se crea eligiendo un juego, y esa elección no se cambia después.\n\nSi haces un juego propio (por ejemplo uno de PvP o supervivencia), no dependes de Minetest Game: defines tú todo lo que necesitas.",
+       "examples": [
+        "$ ls ~/Minetest/games\nminetest_game  mi_juego"
+       ]
+      },
+      {
+       "title": "Estructura de carpetas de un juego",
+       "text": "Un juego es una carpeta dentro de `games/`. Su contenido:\n\n• `game.conf`: datos del juego (obligatorio).\n• `mods/`: todos los mods del juego, uno por carpeta.\n• `menu/`: imágenes del menú principal (`icon.png`, `header.png`, `background.png`).\n• `minetest.conf`: ajustes por defecto que aplica este juego.\n• `settingtypes.txt`: ajustes propios que aparecen en el menú.\n• `README.md`, `LICENSE`.",
+       "examples": [
+        "$ ls -R mi_juego\nmi_juego:\nLICENSE  README.md  game.conf  menu  minetest.conf  mods\n\nmi_juego/menu:\nicon.png\n\nmi_juego/mods:\nbase  jugador  nodos  items"
+       ]
+      },
+      {
+       "title": "game.conf",
+       "text": "`game.conf` es un archivo de `clave = valor` que describe el juego.\n\n• `title`: nombre que se ve en el menú.\n• `description`: texto de presentación.\n• `author`: autor.\n• `allowed_mapgens` / `disallowed_mapgens`: qué generadores de terreno admite (por ejemplo `v7,valleys`).\n• `disabled_settings`: ajustes que el jugador no puede cambiar al crear el mundo.",
+       "examples": [
+        "$ cat mi_juego/game.conf\ntitle = Mi Juego\ndescription = Un juego de pruebas hecho desde cero\nauthor = Juha\nallowed_mapgens = v7,valleys,carpathian"
+       ]
+      },
+      {
+       "title": "Probar tu juego",
+       "text": "Para probarlo, copia la carpeta a `games/`, reinicia Luanti y crea un mundo eligiendo tu juego. Si tienes un error en un mod del juego, el mundo no carga y el motivo está en `debug.txt`.\n\nEn una PC o en Termux se puede lanzar un servidor de pruebas sin menú, útil para ver los errores en la consola.",
+       "examples": [
+        "$ minetest --server --gameid mi_juego --world ~/mundos/prueba\n...\nACTION[Server]: [base] juego cargado"
+       ],
+       "note": "El comando exacto depende de cómo tengas instalado Luanti (`luanti` o `minetest`). En Android se prueba creando el mundo desde la app."
+      },
+      {
+       "title": "Licencias: qué puedes reutilizar",
+       "text": "Minetest Game y la mayoría de los mods tienen licencias que debes respetar. Normalmente el código es LGPL o MIT y los medios (texturas, sonidos) son CC BY-SA o CC0, pero cada mod indica la suya en su `LICENSE` o `README`.\n\nReglas prácticas:\n\n• Puedes aprender del código de otros, pero si copias, respeta la licencia y da crédito.\n• Si mezclas CC BY-SA, tu resultado también debe ser CC BY-SA.\n• Nunca uses texturas, sonidos ni modelos de juegos comerciales (como Minecraft).\n• Declara la licencia de tu juego en `LICENSE`. Una licencia permisiva (MIT) para el código y una de medios (CC BY-SA 4.0) para lo gráfico es una combinación común.",
+       "examples": [
+        "$ cat mi_juego/LICENSE\nMIT License\n\nCopyright (c) 2026 Juha"
+       ]
+      }
+     ]
+    },
+    {
+     "title": "Nivel 2 · Lo mínimo para que arranque",
+     "description": "Los mods base que todo juego necesita.",
+     "sections": [
+      {
+       "title": "Plan de mods del juego",
+       "text": "Un juego se organiza en mods pequeños con una sola responsabilidad. Un orden razonable:\n\n• `base`: API común, tabla global del juego, funciones de ayuda.\n• `nodos`: bloques del mundo (piedra, tierra, agua...).\n• `items`: herramientas y objetos.\n• `jugador`: modelo, inventario, HUD, reglas de entrada.\n• `mapgen`: biomas, menas, decoraciones.\n• `reglas`: la lógica del modo de juego.\n\nCada uno declara sus `depends`. Así evitas un mod gigante y puedes reutilizar partes.",
+       "examples": [
+        "$ cat mi_juego/mods/nodos/mod.conf\nname = nodos\ndescription = Bloques base del juego\ndepends = base"
+       ]
+      },
+      {
+       "title": "Los nodos base y los alias de mapgen",
+       "text": "El generador de terreno necesita saber qué nodos usar. Un juego propio debe registrar al menos piedra y agua, y declarar los alias:\n\n• `mapgen_stone`: la piedra.\n• `mapgen_water_source`: el agua.\n• `mapgen_river_water_source`: el agua de los ríos.\n\nTambién se suelen definir tierra, arena y un nodo de hierba. Sin los alias, el mundo se genera vacío o con error.",
+       "examples": [
+        "$ cat mi_juego/mods/nodos/init.lua\nminetest.register_node(\"nodos:piedra\", {\n    description = \"Piedra\",\n    tiles = {\"nodos_piedra.png\"},\n    groups = {cracky = 3},\n})\n\nminetest.register_node(\"nodos:agua\", {\n    description = \"Agua\",\n    drawtype = \"liquid\",\n    tiles = {\"nodos_agua.png\"},\n    use_texture_alpha = \"blend\",\n    paramtype = \"light\",\n    walkable = false,\n    pointable = false,\n    buildable_to = true,\n    liquidtype = \"source\",\n    liquid_alternative_flowing = \"nodos:agua_corriente\",\n    liquid_alternative_source = \"nodos:agua\",\n    liquid_viscosity = 1,\n    post_effect_color = {a = 103, r = 30, g = 60, b = 90},\n    groups = {water = 3, liquid = 3},\n})\n\nminetest.register_alias(\"mapgen_stone\", \"nodos:piedra\")\nminetest.register_alias(\"mapgen_water_source\", \"nodos:agua\")\nminetest.register_alias(\"mapgen_river_water_source\", \"nodos:agua\")"
+       ],
+       "note": "Un líquido completo necesita también su versión que fluye (`liquidtype = \"flowing\"`). Aquí está recortado para mostrar la idea."
+      },
+      {
+       "title": "La mano",
+       "text": "La \"mano\" es el ítem que tiene el jugador cuando no sostiene nada. Se registra con el nombre vacío `\":\"` y es una herramienta con sus propias capacidades: define qué se puede romper sin herramienta y cuánto daño hace un golpe.",
+       "examples": [
+        "$ cat mi_juego/mods/jugador/init.lua\nminetest.register_item(\":\", {\n    type = \"none\",\n    wield_image = \"jugador_mano.png\",\n    wield_scale = {x = 1, y = 1, z = 2.5},\n    tool_capabilities = {\n        full_punch_interval = 0.9,\n        max_drop_level = 0,\n        groupcaps = {\n            crumbly = {times = {[2] = 3.0, [3] = 1.5}, uses = 0, maxlevel = 1},\n            snappy = {times = {[3] = 0.4}, uses = 0, maxlevel = 1},\n            oddly_breakable_by_hand = {times = {[1] = 3.5, [2] = 2.0, [3] = 0.7}, uses = 0},\n        },\n        damage_groups = {fleshy = 1},\n    },\n})"
+       ]
+      },
+      {
+       "title": "El jugador: modelo, inventario y spawn",
+       "text": "Al entrar, cada jugador necesita su configuración. En `register_on_joinplayer` se define:\n\n• `set_properties`: modelo 3D (`mesh`) y textura (`textures`).\n• El inventario: tamaño de la lista `main` con `inv:set_size`.\n• `set_inventory_formspec`: la pantalla del inventario.\n• `hud_set_hotbar_itemcount`: cuántas casillas tiene la barra.\n\nCon `register_on_newplayer` se dan los ítems iniciales y con `register_on_respawnplayer` se decide dónde renace.",
+       "examples": [
+        "$ cat mi_juego/mods/jugador/init.lua\nminetest.register_on_joinplayer(function(player)\n    player:set_properties({\n        visual = \"mesh\",\n        mesh = \"jugador_modelo.b3d\",\n        textures = {\"jugador_skin.png\"},\n        visual_size = {x = 1, y = 1},\n    })\n    local inv = player:get_inventory()\n    inv:set_size(\"main\", 32)\n    inv:set_width(\"main\", 8)\n    player:hud_set_hotbar_itemcount(8)\n    player:set_inventory_formspec(\n        \"size[8,7.5]\" ..\n        \"bgcolor[#0c0c0cCC;true]\" ..\n        \"list[current_player;main;0,3.5;8,4;]\" ..\n        \"listring[]\")\nend)\n\nminetest.register_on_newplayer(function(player)\n    player:get_inventory():add_item(\"main\", ItemStack(\"items:pico_madera\"))\nend)"
+       ]
+      },
+      {
+       "title": "Modo creativo y supervivencia",
+       "text": "Los ajustes globales del juego se ponen en el `minetest.conf` de la carpeta del juego. Los más comunes:\n\n• `creative_mode = false`: modo supervivencia.\n• `enable_damage = true`: el jugador recibe daño.\n• `enable_pvp = true`: se pueden dañar entre jugadores.\n• `time_speed = 72`: velocidad del día (0 = tiempo detenido).\n• `static_spawnpoint = 0,10,0`: punto fijo de aparición.\n\nEl modo creativo en sí no es automático: un juego decide qué hace \"creativo\" (en general, un inventario con todos los ítems y ruptura instantánea) leyendo `minetest.is_creative_enabled(nombre)`.",
+       "examples": [
+        "$ cat mi_juego/minetest.conf\nenable_damage = true\nenable_pvp = true\ncreative_mode = false\ntime_speed = 72"
+       ]
+      }
+     ]
+    },
+    {
+     "title": "Nivel 3 · Contenido y progresión",
+     "description": "Terreno, recursos y la sensación de avanzar.",
+     "sections": [
+      {
+       "title": "Terreno y generador de mapa",
+       "text": "El generador (`mapgen`) crea el mundo. Los más usados: `v7` (el clásico, con montañas y ríos), `valleys`, `carpathian`, `flat` (plano), `singlenode` (vacío, para juegos hechos con estructuras como skywars).\n\nSe elige al crear el mundo o se fuerza con `allowed_mapgens` en `game.conf`. Los parámetros finos se ajustan en `minetest.conf` (`mgv7_*`) y los biomas, con mods.\n\nEn un juego de arenas o islas suele convenir `singlenode` y construir el mundo con `place_schematic` o con VoxelManip.",
+       "examples": [
+        "$ cat mi_juego/game.conf\ntitle = Mi Juego\nallowed_mapgens = singlenode\n$ cat mi_juego/mods/mapgen/init.lua\nminetest.register_on_generated(function(minp, maxp)\n    if minp.y > 0 or maxp.y < 0 then\n        return\n    end\n    -- aquí se coloca la plataforma inicial\nend)"
+       ]
+      },
+      {
+       "title": "Menas, cuevas y recursos",
+       "text": "Los recursos le dan al jugador motivos para explorar. Con `register_ore` pones menas a distintas profundidades: lo común arriba, lo raro abajo. Con `clust_scarcity` controlas qué tan escasa es cada una.\n\nUna buena progresión sube la dificultad con la profundidad: más valor, menos cantidad. Evita que todo aparezca en el mismo rango de altura.",
+       "examples": [
+        "$ cat mi_juego/mods/mapgen/init.lua\nminetest.register_ore({\n    ore_type = \"scatter\",\n    ore = \"nodos:mena_cobre\",\n    wherein = \"nodos:piedra\",\n    clust_scarcity = 10 * 10 * 10,\n    clust_num_ores = 6,\n    clust_size = 3,\n    y_max = 0,\n    y_min = -200,\n})\n\nminetest.register_ore({\n    ore_type = \"scatter\",\n    ore = \"nodos:mena_oro\",\n    wherein = \"nodos:piedra\",\n    clust_scarcity = 16 * 16 * 16,\n    clust_num_ores = 4,\n    clust_size = 3,\n    y_max = -150,\n    y_min = -600,\n})"
+       ]
+      },
+      {
+       "title": "Progresión: materiales y herramientas",
+       "text": "Que el jugador sienta que avanza depende de cómo encadenas las recetas. Un patrón clásico:\n\n1. Madera → herramientas de madera (rápidas de conseguir, débiles).\n2. Piedra → herramientas de piedra.\n3. Metal → herramientas de metal, que además abren nuevos recursos.\n\nLa clave técnica es `maxlevel` y `max_drop_level` en `tool_capabilities`, junto con el nivel de los grupos de los bloques (`cracky = 1, 2, 3`). Un bloque de `cracky = 1` exige una herramienta con `maxlevel` suficiente para cavarlo.",
+       "examples": [
+        "$ cat mi_juego/mods/items/init.lua\nlocal niveles = {\n    {nombre = \"madera\", tiempo = 3.0, usos = 10, nivel = 1},\n    {nombre = \"piedra\", tiempo = 2.0, usos = 30, nivel = 2},\n    {nombre = \"metal\", tiempo = 1.0, usos = 80, nivel = 3},\n}\n\nfor _, m in ipairs(niveles) do\n    minetest.register_tool(\"items:pico_\" .. m.nombre, {\n        description = \"Pico de \" .. m.nombre,\n        inventory_image = \"items_pico_\" .. m.nombre .. \".png\",\n        tool_capabilities = {\n            full_punch_interval = 1.0,\n            max_drop_level = m.nivel,\n            groupcaps = {\n                cracky = {times = {[1] = m.tiempo * 2, [2] = m.tiempo, [3] = m.tiempo / 2}, uses = m.usos, maxlevel = m.nivel},\n            },\n        },\n    })\nend\n[en el juego]\nSe registran 3 picos con un bucle, en vez de repetir el mismo bloque 3 veces."
+       ]
+      },
+      {
+       "title": "Enemigos y mobs",
+       "text": "Los mobs son entidades con comportamiento. Un mob básico necesita: apariencia, vida, movimiento, detectar al jugador y atacar o huir.\n\nEstructura habitual: cada cierto tiempo (no en cada tick) busca jugadores con `minetest.get_objects_inside_radius`, elige un objetivo, lo persigue con `set_velocity` mirando hacia él con `set_yaw` y, si está cerca, le hace daño con `punch`.\n\nPara no empezar de cero, muchos juegos usan una API de mobs ya hecha (como `mobs_redo`) y definen solo los datos de cada criatura.",
+       "examples": [
+        "$ cat mi_juego/mods/mobs/init.lua\nlocal function perseguir(self, dtime)\n    self.t = (self.t or 0) + dtime\n    if self.t < 0.5 then\n        return\n    end\n    self.t = 0\n    local pos = self.object:get_pos()\n    for _, obj in ipairs(minetest.get_objects_inside_radius(pos, 12)) do\n        if obj:is_player() then\n            local dir = vector.direction(pos, obj:get_pos())\n            self.object:set_velocity({x = dir.x * 2, y = self.object:get_velocity().y, z = dir.z * 2})\n            self.object:set_yaw(math.atan2(-dir.x, dir.z))\n            if vector.distance(pos, obj:get_pos()) < 1.5 then\n                obj:punch(self.object, 1.0, {damage_groups = {fleshy = 2}}, nil)\n            end\n            return\n        end\n    end\nend\n\nminetest.register_entity(\"mobs:zombi\", {\n    initial_properties = {\n        hp_max = 10,\n        physical = true,\n        collisionbox = {-0.3, 0, -0.3, 0.3, 1.8, 0.3},\n        visual = \"mesh\",\n        mesh = \"mobs_zombi.b3d\",\n        textures = {\"mobs_zombi.png\"},\n    },\n    on_step = perseguir,\n})"
+       ]
+      },
+      {
+       "title": "Cielo, sonido ambiente y atmósfera",
+       "text": "La atmósfera le da identidad al juego.\n\n• `player:set_sky({...})`: color del cielo, tipo (`regular`, `skybox`, `plain`) y nubes.\n• `player:set_sun`, `set_moon`, `set_stars`: ajustan astros.\n• `minetest.sound_play` con `loop = true` y `to_player` para música o ambiente.\n• `player:override_day_night_ratio(ratio)`: fija la luz del día.",
+       "examples": [
+        "$ cat mi_juego/mods/jugador/init.lua\nminetest.register_on_joinplayer(function(player)\n    player:set_sky({\n        type = \"regular\",\n        clouds = true,\n        sky_color = {\n            day_sky = \"#7ec8ff\",\n            day_horizon = \"#bfe3ff\",\n            night_sky = \"#05050f\",\n            night_horizon = \"#10102a\",\n        },\n    })\n    minetest.sound_play(\"jugador_ambiente\", {to_player = player:get_player_name(), loop = true, gain = 0.3})\nend)"
+       ]
+      }
+     ]
+    },
+    {
+     "title": "Nivel 4 · Reglas y modos de juego",
+     "description": "Convertir un montón de mods en un juego con identidad propia.",
+     "sections": [
+      {
+       "title": "Reglas con eventos",
+       "text": "La lógica de un modo de juego vive en los eventos que ya conoces: `register_on_dieplayer`, `register_on_respawnplayer`, `register_on_joinplayer`, `register_on_punchplayer` y los callbacks de nodos.\n\nCon ellos se arman reglas como \"al morir pierdes lo que llevas\", \"ganas puntos por cada kill\" o \"no puedes dañar a quien acaba de entrar\".",
+       "examples": [
+        "$ cat mi_juego/mods/reglas/init.lua\nlocal kills = {}\n\nminetest.register_on_dieplayer(function(player, reason)\n    local victima = player:get_player_name()\n    if reason and reason.type == \"punch\" and reason.object and reason.object:is_player() then\n        local asesino = reason.object:get_player_name()\n        kills[asesino] = (kills[asesino] or 0) + 1\n        minetest.chat_send_all(asesino .. \" eliminó a \" .. victima .. \" (\" .. kills[asesino] .. \" kills)\")\n    end\nend)\n\nminetest.register_on_respawnplayer(function(player)\n    player:set_pos({x = 0, y = 10, z = 0})\n    return true\nend)"
+       ]
+      },
+      {
+       "title": "Modo todos contra todos (FFA)",
+       "text": "Un FFA o Skywars se arma con piezas simples:\n\n1. Una arena (estructura o terreno plano).\n2. Spawns aleatorios dentro de la arena.\n3. Cofres con botín.\n4. Reglas: sin building fuera de zona, sin daño antes de empezar, victoria al quedar uno.\n5. Estado del juego (esperando, jugando, terminado) guardado en una tabla.\n\nEl estado de la partida es un valor de texto y todos los eventos lo consultan antes de actuar.",
+       "examples": [
+        "$ cat mi_juego/mods/reglas/init.lua\nlocal partida = {estado = \"esperando\", vivos = {}}\n\nlocal function contar()\n    local n = 0\n    for _ in pairs(partida.vivos) do\n        n = n + 1\n    end\n    return n\nend\n\nminetest.register_on_punchplayer(function(player, hitter)\n    if partida.estado ~= \"jugando\" then\n        return true\n    end\nend)\n\nminetest.register_on_dieplayer(function(player)\n    partida.vivos[player:get_player_name()] = nil\n    if partida.estado == \"jugando\" and contar() == 1 then\n        partida.estado = \"terminado\"\n        local ganador = next(partida.vivos)\n        minetest.chat_send_all(\"Ganó \" .. ganador)\n    end\nend)\n[en el juego]\nMientras el estado no sea «jugando», nadie puede dañar a nadie."
+       ]
+      },
+      {
+       "title": "Ajustes propios del juego",
+       "text": "Un juego puede exponer opciones en `settingtypes.txt` para que el creador del mundo las ajuste, y leerlas con `minetest.settings`. Así pasas parámetros como duración de partida, cantidad de jugadores mínima o velocidad de aparición de botín sin tocar código.",
+       "examples": [
+        "$ cat mi_juego/settingtypes.txt\n[Partida]\nmj_duracion (Duración de la partida en segundos) int 300 60 3600\nmj_jugadores_min (Jugadores mínimos para empezar) int 2 2 32\n$ cat mi_juego/mods/reglas/init.lua\nlocal duracion = tonumber(minetest.settings:get(\"mj_duracion\")) or 300\nlocal minimo = tonumber(minetest.settings:get(\"mj_jugadores_min\")) or 2"
+       ]
+      },
+      {
+       "title": "Menú del juego",
+       "text": "La carpeta `menu/` personaliza cómo se ve el juego en la lista del menú principal. Los archivos se reconocen por nombre:\n\n• `icon.png`: icono del juego.\n• `header.png`: logo del encabezado.\n• `background.png`: fondo del menú.\n• `overlay.png` y `footer.png`: capas extra.\n\nMantén las imágenes livianas y con transparencia donde corresponda.",
+       "examples": [
+        "$ ls mi_juego/menu\nbackground.png  header.png  icon.png"
+       ]
+      },
+      {
+       "title": "Organizar mods grandes",
+       "text": "Cuando el juego crece, conviene que cada mod tenga una responsabilidad y que se comuniquen por una API en una tabla global. Ejemplo: `reglas` llama a `base.dar_puntos(player, 1)` sin saber cómo se guardan los puntos.\n\nBuenas prácticas del juego completo:\n\n• Un mod `base` con funciones comunes y ninguna dependencia.\n• Nombres con prefijo por mod.\n• Datos (listas de materiales, constantes) separados de la lógica.\n• Sin dependencias circulares.\n• Un `README` por mod que lo describa.",
+       "examples": [
+        "$ cat mi_juego/mods/reglas/mod.conf\nname = reglas\ndescription = Reglas del modo de juego\ndepends = base, jugador, nodos, items"
+       ]
+      }
+     ]
+    },
+    {
+     "title": "Nivel 5 · Publicar y mantener",
+     "description": "Cómo entregar tu juego y mantenerlo vivo.",
+     "sections": [
+      {
+       "title": "Probar antes de publicar",
+       "text": "Lista mínima de pruebas:\n\n• Mundo nuevo, desde cero, con el juego recién copiado.\n• Entrar, morir, renacer, salir y volver a entrar.\n• Servidor dedicado con 2 o más jugadores (si es multijugador).\n• Revisar `debug.txt`: no debe haber `ERROR` ni advertencias repetidas.\n• Probar en un celular real si apuntas a Android: rendimiento y formspecs.",
+       "examples": [
+        "$ grep -c \"ERROR\" ~/Minetest/debug.txt\n0"
+       ]
+      },
+      {
+       "title": "Documentar: README y capturas",
+       "text": "Un buen `README.md` incluye: qué es el juego, cómo se juega, requisitos (versión mínima de Luanti), cómo instalarlo, cómo contribuir y la licencia.\n\nAgrega `screenshot.png` y, si hay mods propios, un `README` en cada uno. Un changelog con los cambios de cada versión ayuda a tus jugadores.",
+       "examples": [
+        "$ ls mi_juego\nLICENSE  README.md  game.conf  menu  minetest.conf  mods  screenshot.png"
+       ]
+      },
+      {
+       "title": "Publicar en ContentDB y versionar",
+       "text": "En ContentDB creas la ficha del juego, indicas el repositorio y publicas versiones. Usa versionado semántico:\n\n• `1.0.0`: primera versión estable.\n• `1.1.0`: contenido nuevo compatible.\n• `1.1.1`: arreglo de errores.\n• `2.0.0`: cambios que rompen mundos antiguos.\n\nCuando cambies nombres de nodos, deja un `register_alias` y un LBM para que los mundos viejos sigan funcionando.",
+       "examples": [
+        "$ git tag v1.0.0\n$ git push origin v1.0.0"
+       ]
+      },
+      {
+       "title": "Mantener y crecer",
+       "text": "Un juego vive de sus actualizaciones. Hábitos que hacen la diferencia:\n\n• Lee los reportes de errores de los jugadores y reprodúcelos.\n• Escribe lo que cambias en el changelog.\n• No borres nodos o ítems de golpe: usa alias.\n• Revisa cada versión nueva de Luanti por cambios en la API (`lua_api.md` y las notas de versión).\n• Si algo es muy popular, sepáralo en un mod publicado aparte para que otros lo reutilicen.",
+       "examples": [
+        "$ git log --oneline | head -n 3\na1b2c3d Arreglo de kills duplicados\ne4f5a6b Nueva arena\n7c8d9e0 Primera versión"
+       ]
+      }
+     ]
+    }
+   ],
+   "guides": [
+    {
+     "title": "Plantilla de juego lista para copiar",
+     "text": "Esqueleto mínimo de un juego propio: carpeta, `game.conf` y mods base separados. Cámbiale el nombre y agrega lo tuyo.",
+     "examples": [
+      "$ mkdir -p mi_juego/mods/base mi_juego/menu\n$ cd mi_juego\n$ cat > game.conf <<'EOF'\ntitle = Mi Juego\ndescription = Descripción del juego\nauthor = Autor\nEOF\n$ cat > mods/base/mod.conf <<'EOF'\nname = base\ndescription = API común del juego\nEOF\n$ cat > mods/base/init.lua <<'EOF'\nbase = {}\nminetest.log(\"action\", \"[base] cargado\")\nEOF\n$ ls -R\n.:\ngame.conf  menu  mods\n\n./menu:\n\n./mods:\nbase\n\n./mods/base:\ninit.lua  mod.conf"
+     ]
+    },
+    {
+     "title": "Lista de verificación de un juego",
+     "text": "Antes de dar tu juego por terminado, comprueba:\n\n• `game.conf` con título, descripción y autor.\n• Alias `mapgen_stone`, `mapgen_water_source` y `mapgen_river_water_source`.\n• La mano (`register_item(\":\", ...)`).\n• Configuración del jugador al entrar (modelo, inventario, hotbar).\n• Reglas de muerte y renacer.\n• Todos los ajustes en `minetest.conf`.\n• Íconos del menú (`menu/icon.png`).\n• `README` y `LICENSE`.\n• Mundo nuevo probado sin errores en `debug.txt`.",
+     "examples": [
+      "$ grep -c \"ERROR\" debug.txt\n0"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "textura",
+   "title": "Textura",
+   "description": "Diseña texturas y arma un paquete de texturas para publicar.",
+   "levels": [
+    {
+     "title": "Nivel 1 · Fundamentos de texturas",
+     "description": "Qué es una textura en Luanti y cómo se piensa.",
+     "sections": [
+      {
+       "title": "Qué es una textura en Luanti",
+       "text": "Una textura es una imagen `.png` que Luanti pega sobre algo: las caras de un bloque, el icono de un ítem, la piel de un jugador, partículas, el HUD o el cielo.\n\nCada mod guarda las suyas en su carpeta `textures/`. Se nombran con el prefijo del mod, por ejemplo `default_stone.png` o `mimod_bloque.png`. Ese nombre es el que se escribe en `tiles` o `inventory_image`.\n\nUn paquete de texturas no agrega bloques nuevos: reemplaza imágenes que ya existen, usando exactamente el mismo nombre de archivo.",
+       "examples": [
+        "$ ls mods/default/textures | head -n 4\ndefault_acacia_bush_leaves.png\ndefault_acacia_bush_sapling.png\ndefault_acacia_bush_stem.png\ndefault_acacia_leaves.png"
+       ]
+      },
+      {
+       "title": "Tamaño y formato",
+       "text": "El formato es PNG, que admite transparencia. El tamaño más común para bloques es 16x16 píxeles. Se usan potencias de 2: 16, 32, 64, 128, 256.\n\nUna textura más grande da más detalle pero usa más memoria, y en un celular de pocos recursos puede notarse. Mantén el mismo tamaño en todo tu paquete para que se vea coherente: mezclar tamaños hace que unas texturas se vean borrosas y otras nítidas.",
+       "examples": [
+        "$ magick identify mimod_bloque.png\nmimod_bloque.png PNG 16x16 16x16+0+0 8-bit sRGB 412B 0.000u 0:00.000"
+       ],
+       "note": "`magick identify` viene con ImageMagick (`pkg install imagemagick`). Muestra el formato y el tamaño de una imagen."
+      },
+      {
+       "title": "Tipos de texturas",
+       "text": "• Nodos: una imagen por cara, o una \"textura de nodo\".\n• Ítems: `inventory_image` para el inventario y `wield_image` para la mano.\n• Entidades y modelos: la piel de un mob o un objeto 3D.\n• Jugador: la skin del personaje.\n• Interfaz (GUI): barras, hotbar, corazones, burbujas.\n• Partículas, cielo, nubes y efectos.\n• Grietas: la animación al romper un bloque.",
+       "examples": [
+        "$ ls textures\nmimod_bloque.png  mimod_pico.png  mimod_lingote.png"
+       ]
+      },
+      {
+       "title": "Pixel art: reglas básicas",
+       "text": "Las texturas son pixel art. Principios que mejoran cualquier textura:\n\n• Usa pocos colores (una paleta de 4 a 8 por textura).\n• Aplica luz coherente: la luz viene de arriba a la izquierda, así que arriba más claro y abajo más oscuro.\n• Evita los degradados suaves; usa bloques de color.\n• Añade variación sutil (puntos más claros u oscuros) para que no se vea plano.\n• Sin bordes negros fuertes en bloques: se verían cuadriculados al repetirse.\n• La textura de un bloque debe ser \"tileable\": al repetirse una al lado de la otra, no se nota el corte.",
+       "examples": [
+        "$ ls paleta\npiedra.gpl  madera.gpl"
+       ]
+      }
+     ]
+    },
+    {
+     "title": "Nivel 2 · Hacer un paquete de texturas",
+     "description": "Estructura, archivos obligatorios y cómo instalarlo y probarlo.",
+     "sections": [
+      {
+       "title": "Estructura de un paquete",
+       "text": "Un paquete de texturas es una carpeta con tus imágenes y un archivo de descripción. Lo mínimo:\n\n• Una carpeta con el nombre del paquete.\n• `texture_pack.conf`: título y descripción.\n• Tus `.png`, con los nombres de las texturas que reemplazan.\n• `screenshot.png`: una captura para el menú y ContentDB.\n\nColoca los `.png` directamente en la carpeta principal del paquete: es la estructura más segura y la que usan casi todos.",
+       "examples": [
+        "$ ls -R mi_pack\nmi_pack:\ndefault_dirt.png  default_stone.png  default_wood.png  screenshot.png  texture_pack.conf"
+       ]
+      },
+      {
+       "title": "texture_pack.conf",
+       "text": "Es un archivo de texto con `clave = valor`. Los campos habituales:\n\n• `title`: el nombre del paquete tal como se muestra.\n• `description`: una frase que explica qué es.\n\nEs todo lo que necesitas para que Luanti lo reconozca y lo muestre bien en el menú.",
+       "examples": [
+        "$ cat mi_pack/texture_pack.conf\ntitle = Mi Pack\ndescription = Texturas simples en 16x16 con colores suaves"
+       ]
+      },
+      {
+       "title": "Nombres exactos de las texturas",
+       "text": "Para reemplazar una textura, tu archivo debe llamarse igual que el original. Para saber cómo se llama, mira las carpetas de los mods:\n\n• `games/minetest_game/mods/default/textures/` tiene piedra, tierra, madera, hojas, agua...\n• Cada mod tiene su propia carpeta `textures/`.\n• El motor trae las de la interfaz, como la barra rápida (`gui_hotbar.png`), los corazones (`heart.png`) o las burbujas (`bubble.png`).\n\nSi un nombre no coincide, Luanti usa la textura original y tu archivo se ignora.",
+       "examples": [
+        "$ ls ~/Minetest/games/minetest_game/mods/default/textures | grep cobble\ndefault_cobble.png\ndefault_desert_cobble.png\ndefault_mossycobble.png"
+       ]
+      },
+      {
+       "title": "Instalar y activar",
+       "text": "Copia la carpeta del paquete dentro de la carpeta `textures/` de los datos de Luanti (la misma que tiene `games/`, `mods/` y `worlds/`).\n\nLuego abre Luanti, entra a la sección de contenido y selecciona tu paquete de la lista para activarlo. El botón exacto puede cambiar según la versión del juego.\n\nLos cambios en las imágenes no se aplican en vivo: guarda tus `.png`, sal del mundo y vuelve a entrar para ver las texturas nuevas.",
+       "examples": [
+        "$ cp -r mi_pack ~/Minetest/textures/\n$ ls ~/Minetest/textures\nmi_pack"
+       ]
+      },
+      {
+       "title": "Reemplazar solo algunas texturas",
+       "text": "No hace falta rehacer todo. Un paquete puede tener 5 texturas o 500. Lo que no incluyas se ve con la imagen original, así que puedes empezar con lo que más se ve (tierra, piedra, madera, hojas) y crecer con el tiempo.\n\nPara reemplazar una cara concreta de un bloque sin cambiar las otras, se puede usar un archivo `override.txt` dentro del paquete: cada línea indica el nombre del nodo, qué parte cambiar (`top`, `bottom`, `sides`, `all`, `inventory`, `wield`...) y la textura a usar.",
+       "examples": [
+        "$ cat mi_pack/override.txt\ndefault:dirt_with_grass top mi_pack_hierba_arriba.png\ndefault:tree inventory mi_pack_tronco_icono.png"
+       ],
+       "note": "`override.txt` existe solo en versiones recientes de Luanti. Si no lo necesitas, mantén el paquete simple: un `.png` por cada textura que reemplazas."
+      },
+      {
+       "title": "Sonidos en el paquete",
+       "text": "Un paquete también puede incluir una carpeta `sounds/` con archivos `.ogg` que reemplazan sonidos del juego, con el mismo nombre que los originales. Es opcional, pero sirve para darle una identidad completa al paquete.",
+       "examples": [
+        "$ ls mi_pack\nsounds  texture_pack.conf  default_stone.png\n$ ls mi_pack/sounds\ndefault_dig_cracky.ogg"
+       ]
+      }
+     ]
+    },
+    {
+     "title": "Nivel 3 · Crear las texturas",
+     "description": "Herramientas y técnicas para dibujarlas bien.",
+     "sections": [
+      {
+       "title": "Herramientas",
+       "text": "• En el celular: Pixly y otros editores de pixel art.\n• En computadora: Aseprite, GIMP, Krita o Piskel (en el navegador).\n• Para skins: PMCSkin3D, que muestra el modelo en 3D mientras pintas.\n\nLa regla común: lienzo del tamaño real (16x16) con un zoom grande, lápiz de 1 píxel, sin suavizado y guardado como PNG.",
+       "examples": [
+        "$ ls ~/storage/pictures/pixly\nhierba.png  piedra.png"
+       ]
+      },
+      {
+       "title": "Flujo de trabajo",
+       "text": "1. Abre la textura original del bloque como guía.\n2. Define una paleta pequeña y úsala en todas las texturas.\n3. Dibuja la forma base y luego los detalles.\n4. Prueba el mosaico: pega 4 copias en una imagen de 32x32 y revisa que no se vea el corte.\n5. Guarda con el nombre exacto y cópiala al paquete.\n6. Entra al juego y míralo en el mundo, con distintas luces.\n\nMirar la textura dentro del juego es lo único que confirma si funciona.",
+       "examples": [
+        "$ magick hierba.png hierba.png +append fila.png\n$ magick fila.png fila.png -append mosaico.png"
+       ]
+      },
+      {
+       "title": "Texturas de bloques",
+       "text": "Un bloque tiene hasta 6 caras. Piensa cada cara por separado:\n\n• Tierra: una sola textura.\n• Hierba: arriba (verde), abajo (tierra) y lados (tierra con el borde verde).\n• Tronco: arriba y abajo con anillos, lados con corteza.\n\nCuida que los bordes de la misma textura coincidan al repetirse y evita elementos únicos muy llamativos, porque se repetirán de forma obvia sobre una pared grande.",
+       "examples": [
+        "$ ls\nmi_hierba_arriba.png  mi_hierba_lado.png  default_dirt.png"
+       ]
+      },
+      {
+       "title": "Ítems y herramientas",
+       "text": "Los ítems no son bloques, así que usan fondo transparente. Se dibujan en diagonal (la herramienta apunta hacia arriba a la derecha), con un contorno oscuro y 2 o 3 tonos del material.\n\nLa textura del inventario y la de la mano suelen ser la misma imagen. El tamaño más común es 16x16.",
+       "examples": [
+        "$ ls items\nmimod_pico.png  mimod_lingote.png  mimod_espada.png"
+       ]
+      },
+      {
+       "title": "Animaciones",
+       "text": "Una textura animada es una imagen vertical que junta varios cuadros uno debajo del otro (por ejemplo, 16x64 son 4 cuadros de 16x16). Luego se le indica al motor que la anime en la definición del nodo.\n\nSirve para agua, lava, fuego o efectos.",
+       "examples": [
+        "$ cat mimod/init.lua\nminetest.register_node(\"mimod:lava\", {\n    description = \"Lava\",\n    tiles = {{\n        name = \"mimod_lava_anim.png\",\n        animation = {\n            type = \"vertical_frames\",\n            aspect_w = 16,\n            aspect_h = 16,\n            length = 2.0,\n        },\n    }},\n    light_source = 13,\n    groups = {cracky = 3},\n})"
+       ]
+      },
+      {
+       "title": "Modificadores de textura",
+       "text": "Luanti puede transformar una imagen al vuelo escribiéndole modificadores después de `^`. Así reutilizas una misma textura con variantes sin dibujarlas todas.\n\n• `textura.png^[colorize:#ff0000:100`: tiñe de color.\n• `textura.png^[opacity:128`: la hace translúcida.\n• `textura.png^otra.png`: superpone una imagen sobre otra (útil para bordes y minerales).\n• `textura.png^[transformR90`: la gira 90 grados.\n• `textura.png^[resize:32x32`: cambia el tamaño.\n\nEsto se escribe en lugar del nombre del archivo en `tiles`, `inventory_image`, etc.",
+       "examples": [
+        "tiles = {\"default_stone.png^mimod_mena_cobre.png\"}\ntiles = {\"default_dirt.png^[colorize:#ff0000:60\"}"
+       ]
+      },
+      {
+       "title": "Skins de jugador",
+       "text": "La skin es la textura del personaje. Con el modelo clásico de Minetest Game es un `.png` de 64x32 píxeles; algunos juegos y modelos más nuevos usan 64x64.\n\nCada parte del cuerpo ocupa una zona fija de la imagen. Lo más cómodo es editarla en PMCSkin3D, que muestra el personaje en 3D, y exportar el `.png`. En un juego se asigna con `player:set_properties({textures = {\"skin.png\"}})`.",
+       "examples": [
+        "$ magick identify skin.png\nskin.png PNG 64x32 64x32+0+0 8-bit sRGB 1.2KB"
+       ]
+      },
+      {
+       "title": "Interfaz: hotbar, corazones y grietas",
+       "text": "El motor trae sus propias texturas para la interfaz y se pueden reemplazar con el mismo método (mismo nombre en tu paquete). Algunas de las más conocidas:\n\n• `gui_hotbar.png` y `gui_hotbar_selected.png`: la barra rápida.\n• `heart.png`: los corazones de vida.\n• `bubble.png`: las burbujas de aire bajo el agua.\n• `crack_anylength.png`: la animación de romper un bloque.\n• `smoke_puff.png`: humo y partículas.\n\nCon esto puedes darle estilo propio a toda la pantalla sin tocar código.",
+       "examples": [
+        "$ ls mi_pack\ngui_hotbar.png  gui_hotbar_selected.png  heart.png  texture_pack.conf"
+       ]
+      }
+     ]
+    },
+    {
+     "title": "Nivel 4 · Publicar tu paquete",
+     "description": "Licencia, capturas y ContentDB.",
+     "sections": [
+      {
+       "title": "Licencia y originalidad",
+       "text": "Las texturas tienen derechos de autor igual que el código. Puedes publicar solo lo que hiciste tú o lo que tenga una licencia que lo permita.\n\n• Dibuja tus propias texturas, o usa de otros con licencia libre (CC BY-SA, CC0) respetando los créditos.\n• No uses texturas de Minecraft ni de otros juegos comerciales.\n• Si usas algo de Minetest Game como base, respeta su licencia (normalmente CC BY-SA 3.0): tu resultado hereda las mismas condiciones.",
+       "examples": [
+        "$ cat mi_pack/LICENSE\nCC BY-SA 4.0 - Texturas por Juha (CraftPlay777)"
+       ]
+      },
+      {
+       "title": "Capturas y presentación",
+       "text": "Una buena publicación necesita imágenes. `screenshot.png` debe mostrar tu paquete en acción: un paisaje con tierra, hierba, árboles y agua, y algunos bloques de cerca. Se recomienda una proporción de 3:2.\n\nExplica en el `README` el tamaño de las texturas (16x, 32x...), qué cubre (bloques, ítems, GUI) y qué juegos son compatibles.",
+       "examples": [
+        "$ ls mi_pack | grep -v png\nLICENSE  README.md  texture_pack.conf"
+       ]
+      },
+      {
+       "title": "Subir a ContentDB",
+       "text": "1. Sube la carpeta del paquete a un repositorio (por ejemplo en GitHub).\n2. En ContentDB elige \"Agregar paquete\" y selecciona el tipo \"Paquete de texturas\".\n3. Completa título, descripción, licencia y capturas.\n4. Publica una versión (release) con una etiqueta de Git.\n\nDesde ese momento, cualquier jugador puede instalarlo desde el propio menú de Luanti.",
+       "examples": [
+        "$ git init\n$ git add .\n$ git commit -m \"Mi Pack v1\"\n$ git tag v1.0.0"
+       ]
+      },
+      {
+       "title": "Mantener el paquete",
+       "text": "Cuando salen mods o juegos nuevos, aparecen texturas nuevas sin reemplazar: se ven con la imagen original y desentonan. Ve ampliando tu paquete poco a poco, priorizando lo que más se ve.\n\nMantén un `README` con la lista de lo que cubre, y haz versiones pequeñas y frecuentes en vez de una gigante.",
+       "examples": [
+        "$ ls mi_pack | wc -l\n42"
+       ]
+      }
+     ]
+    }
+   ],
+   "guides": [
+    {
+     "title": "Crear un paquete desde Termux",
+     "text": "Puedes armar la estructura de un paquete con unos comandos y después solo agregar tus imágenes. Para compartirlo, comprímelo en un `.zip` con la carpeta del paquete dentro.",
+     "examples": [
+      "$ mkdir -p mi_pack\n$ cd mi_pack\n$ cat > texture_pack.conf <<'EOF'\ntitle = Mi Pack\ndescription = Texturas simples en 16x16\nEOF\n$ cp ~/storage/pictures/pixly/piedra.png default_stone.png\n$ ls\ndefault_stone.png  texture_pack.conf\n$ cd ..\n$ zip -r mi_pack.zip mi_pack\n  adding: mi_pack/ (stored 0%)\n  adding: mi_pack/texture_pack.conf (stored 0%)\n  adding: mi_pack/default_stone.png (stored 0%)"
+     ]
+    },
+    {
+     "title": "Lista de verificación de un paquete",
+     "text": "Antes de publicar tu paquete:\n\n• `texture_pack.conf` con `title` y `description`.\n• Todos los `.png` con el nombre exacto del original.\n• Mismo tamaño en todas las texturas (16, 32, 64...).\n• Bloques \"tileable\": sin cortes visibles al repetirse.\n• Fondo transparente en ítems.\n• `screenshot.png` representativa.\n• `LICENSE` y créditos.\n• Probado en el juego, de día y de noche, y en cuevas.",
+     "examples": [
+      "$ ls mi_pack | wc -l\n42"
+     ]
+    }
+   ]
+  }
+ ]
+}

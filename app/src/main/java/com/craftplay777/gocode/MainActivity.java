@@ -108,7 +108,45 @@ public class MainActivity extends Activity {
             if (data == null) data = new JSONObject();
             cache.put(file, data);
         }
+        if (l.has("track")) {
+            return obj(arr(data, "tracks"), l.optInt("track"));
+        }
         return data;
+    }
+
+    // Crea un "lenguaje" falso a partir de una ruta (Mod, Juego, Textura...)
+    JSONObject trackLang(JSONObject l, int t, JSONObject track) {
+        JSONObject n = new JSONObject();
+        try {
+            n.put("id", l.optString("id") + "_" + track.optString("id", "t" + t));
+            n.put("name", l.optString("name") + " · " + track.optString("title"));
+            n.put("file", l.optString("file"));
+            n.put("color", l.optString("color"));
+            n.put("track", t);
+        } catch (Exception e) {
+            // no pasa nada
+        }
+        return n;
+    }
+
+    // Devuelve {hechas, total}
+    int[] progress(JSONObject l) {
+        int total = 0;
+        int done = 0;
+        JSONObject data = lang(l);
+        JSONArray tracks = l.has("track") ? new JSONArray() : arr(data, "tracks");
+        for (int t = 0; t < tracks.length(); t++) {
+            int[] p = progress(trackLang(l, t, obj(tracks, t)));
+            done += p[0];
+            total += p[1];
+        }
+        JSONArray levels = arr(data, "levels");
+        for (int v = 0; v < levels.length(); v++) {
+            int n = arr(obj(levels, v), "sections").length();
+            total += n;
+            done += levelDoneCount(l.optString("id"), v, n);
+        }
+        return new int[]{done, total};
     }
 
     static JSONArray arr(JSONObject o, String k) {
@@ -227,15 +265,9 @@ public class MainActivity extends Activity {
         for (int i = 0; i < langs.length(); i++) {
             final JSONObject l = obj(langs, i);
             int accent = color(l.optString("color"), Ui.ACCENT);
-            JSONArray levels = arr(lang(l), "levels");
-
-            int total = 0;
-            int done = 0;
-            for (int v = 0; v < levels.length(); v++) {
-                int n = arr(obj(levels, v), "sections").length();
-                total += n;
-                done += levelDoneCount(l.optString("id"), v, n);
-            }
+            int[] pr = progress(l);
+            int done = pr[0];
+            int total = pr[1];
 
             LinearLayout card = Ui.card(this, true);
             card.addView(Ui.text(this, l.optString("name"), 22, accent, true));
@@ -283,7 +315,24 @@ public class MainActivity extends Activity {
         JSONArray guides = arr(data, "guides");
 
         LinearLayout body = bodyCol();
-        body.addView(Ui.text(this, "NIVELES", 12, Ui.SUB, true));
+        JSONArray tracks = l.has("track") ? new JSONArray() : arr(data, "tracks");
+        if (tracks.length() > 0) {
+            body.addView(Ui.text(this, "RUTAS", 12, Ui.SUB, true));
+            for (int t = 0; t < tracks.length(); t++) {
+                JSONObject tr = obj(tracks, t);
+                final JSONObject tl = trackLang(l, t, tr);
+                int[] pr = progress(tl);
+                LinearLayout tcard = Ui.card(this, true);
+                tcard.addView(Ui.text(this, tr.optString("title"), 18, Ui.TEXT, true));
+                Ui.add(tcard, Ui.text(this, tr.optString("description"), 14, Ui.SUB, false), 4);
+                Ui.add(tcard, Ui.text(this, pr[0] + " de " + pr[1] + " secciones", 13, accent, false), 8);
+                tcard.addView(Ui.bar(this, pr[0], pr[1], accent));
+                tcard.setOnClickListener(v -> push(() -> langScreen(tl)));
+                Ui.add(body, tcard, 10);
+            }
+        } else {
+            body.addView(Ui.text(this, "NIVELES", 12, Ui.SUB, true));
+        }
 
         for (int i = 0; i < levels.length(); i++) {
             final int li = i;

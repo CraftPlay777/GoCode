@@ -114,6 +114,174 @@
      ]
     }
    ]
+  },
+  {
+   "title": "Nivel 4 · Selección, matemáticas y textos",
+   "description": "Más herramientas: switch, matemáticas y trabajo con caracteres.",
+   "sections": [
+    {
+     "title": "switch",
+     "text": "`switch` elige entre varios casos según el valor de una variable (entero o carácter). Cada `case` termina con `break`; `default` se ejecuta si ningún caso coincide.",
+     "examples": [
+      "$ cat hola.c\n#include <stdio.h>\n\nint main(void) {\n    int dia = 3;\n    switch (dia) {\n        case 1:\n            printf(\"Lunes\\n\");\n            break;\n        case 2:\n            printf(\"Martes\\n\");\n            break;\n        case 3:\n            printf(\"Miércoles\\n\");\n            break;\n        default:\n            printf(\"Otro día\\n\");\n    }\n    return 0;\n}\n$ clang hola.c -o hola\n$ ./hola\nMiércoles"
+     ],
+     "note": "Sin `break`, C sigue ejecutando los casos de abajo aunque no coincidan (fall-through)."
+    },
+    {
+     "title": "Ternario y asignaciones compuestas",
+     "text": "El operador ternario `condicion ? valorSi : valorNo` es un `if` en una línea que devuelve un valor.\n\n`x += 5` es `x = x + 5`. Existen `-=`, `*=`, `/=` y `%=`. `x++` suma 1 y `x--` resta 1.",
+     "examples": [
+      "$ cat hola.c\n#include <stdio.h>\n\nint main(void) {\n    int edad = 15;\n    printf(\"%s\\n\", (edad >= 18) ? \"adulto\" : \"menor\");\n    int total = 10;\n    total += 5;\n    total *= 2;\n    printf(\"%d\\n\", total);\n    int i = 5;\n    i++;\n    printf(\"%d\\n\", i);\n    return 0;\n}\n$ clang hola.c -o hola\n$ ./hola\nmenor\n30\n6"
+     ]
+    },
+    {
+     "title": "math.h",
+     "text": "`#include <math.h>` trae `sqrt`, `pow`, `fabs` (valor absoluto de decimales), `round`, `ceil` y `floor`. Trabajan con `double`.",
+     "examples": [
+      "$ cat hola.c\n#include <stdio.h>\n#include <math.h>\n\nint main(void) {\n    printf(\"%.1f\\n\", sqrt(16));\n    printf(\"%.1f\\n\", pow(2, 3));\n    printf(\"%.0f\\n\", round(3.6));\n    printf(\"%.0f %.0f\\n\", ceil(2.1), floor(2.9));\n    return 0;\n}\n$ clang hola.c -o hola\n$ ./hola\n4.0\n8.0\n4\n3 2"
+     ],
+     "note": "En muchos Linux hay que compilar con `-lm` al final (`clang prog.c -o prog -lm`) para enlazar las matemáticas. En Termux suele funcionar sin eso, pero conviene acostumbrarse."
+    },
+    {
+     "title": "Convertir tipos",
+     "text": "`(int) 7.9` corta los decimales (no redondea). Para pasar texto a número, `#include <stdlib.h>` trae `atoi` (a entero) y `atof` (a decimal).\n\nPara armar un texto con formato se usa `snprintf`: funciona como `printf` pero escribe en un array de `char`.",
+     "examples": [
+      "$ cat hola.c\n#include <stdio.h>\n#include <stdlib.h>\n\nint main(void) {\n    double d = 7.9;\n    printf(\"%d\\n\", (int) d);\n    printf(\"%d\\n\", atoi(\"42\") + 1);\n    printf(\"%.1f\\n\", atof(\"3.5\") * 2);\n    char buf[20];\n    snprintf(buf, sizeof(buf), \"%d!\", 99);\n    printf(\"%s\\n\", buf);\n    return 0;\n}\n$ clang hola.c -o hola\n$ ./hola\n7\n43\n7.0\n99!"
+     ]
+    },
+    {
+     "title": "Recorrer textos (ctype.h)",
+     "text": "Un texto termina en `'\\0'`, así que se puede recorrer hasta encontrarlo. `#include <ctype.h>` trae funciones para revisar y cambiar caracteres: `isdigit`, `isalpha`, `toupper`, `tolower`.",
+     "examples": [
+      "$ cat hola.c\n#include <stdio.h>\n#include <ctype.h>\n\nint main(void) {\n    char t[] = \"Hola 123\";\n    int digitos = 0;\n    for (int i = 0; t[i] != '\\0'; i++) {\n        if (isdigit(t[i])) {\n            digitos++;\n        }\n        t[i] = toupper(t[i]);\n    }\n    printf(\"%s\\n\", t);\n    printf(\"Digitos: %d\\n\", digitos);\n    return 0;\n}\n$ clang hola.c -o hola\n$ ./hola\nHOLA 123\nDigitos: 3"
+     ]
+    },
+    {
+     "title": "fgets: leer líneas",
+     "text": "`scanf(\"%s\")` corta en el primer espacio. Para leer una línea completa se usa `fgets(destino, tamaño, stdin)`, que además guarda el salto de línea al final. Se lo puede quitar con `strcspn`.",
+     "examples": [
+      "$ cat hola.c\n#include <stdio.h>\n#include <string.h>\n\nint main(void) {\n    char nombre[50];\n    printf(\"Nombre completo: \");\n    fgets(nombre, sizeof(nombre), stdin);\n    nombre[strcspn(nombre, \"\\n\")] = '\\0';\n    printf(\"Hola %s\\n\", nombre);\n    return 0;\n}\n$ clang hola.c -o hola\n$ ./hola\nNombre completo: Ana Maria\nHola Ana Maria"
+     ],
+     "note": "`fgets` es más seguro que `scanf(\"%s\")` porque limita cuántos caracteres lee y así evita desbordar el array."
+    },
+    {
+     "title": "do-while, break y continue",
+     "text": "`do-while` revisa la condición al final, así que el bloque corre al menos una vez. `break` corta el bucle y `continue` salta a la siguiente vuelta.",
+     "examples": [
+      "$ cat hola.c\n#include <stdio.h>\n\nint main(void) {\n    for (int n = 1; n <= 5; n++) {\n        if (n == 2) continue;\n        if (n == 5) break;\n        printf(\"%d\\n\", n);\n    }\n    int k = 0;\n    do {\n        printf(\"k = %d\\n\", k);\n        k++;\n    } while (k < 2);\n    return 0;\n}\n$ clang hola.c -o hola\n$ ./hola\n1\n3\n4\nk = 0\nk = 1"
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Nivel 5 · Estructuras de datos",
+   "description": "Agrupar datos, matrices y punteros más a fondo.",
+   "sections": [
+    {
+     "title": "struct",
+     "text": "Una `struct` agrupa varios datos bajo un mismo nombre. Se accede a cada campo con un punto. Es el equivalente de las clases, pero sin métodos.",
+     "examples": [
+      "$ cat hola.c\n#include <stdio.h>\n\nstruct Alumno {\n    char nombre[20];\n    int nota;\n};\n\nint main(void) {\n    struct Alumno a = {\"Ana\", 9};\n    printf(\"%s sacó %d\\n\", a.nombre, a.nota);\n    a.nota = 10;\n    printf(\"%d\\n\", a.nota);\n    return 0;\n}\n$ clang hola.c -o hola\n$ ./hola\nAna sacó 9\n10"
+     ]
+    },
+    {
+     "title": "typedef y arrays de struct",
+     "text": "`typedef` le da un nombre corto a un tipo, así no hace falta escribir `struct` cada vez. Se pueden armar arrays de `struct` para guardar muchos registros.",
+     "examples": [
+      "$ cat hola.c\n#include <stdio.h>\n\ntypedef struct {\n    char nombre[20];\n    int nota;\n} Alumno;\n\nint main(void) {\n    Alumno curso[2] = { {\"Ana\", 9}, {\"Luis\", 7} };\n    for (int i = 0; i < 2; i++) {\n        printf(\"%s: %d\\n\", curso[i].nombre, curso[i].nota);\n    }\n    return 0;\n}\n$ clang hola.c -o hola\n$ ./hola\nAna: 9\nLuis: 7"
+     ]
+    },
+    {
+     "title": "enum",
+     "text": "Un `enum` define un grupo de nombres con valores enteros, empezando desde 0. Hace el código más legible que usar números sueltos.",
+     "examples": [
+      "$ cat hola.c\n#include <stdio.h>\n\nenum Dia { LUNES, MARTES, MIERCOLES };\n\nint main(void) {\n    enum Dia hoy = MARTES;\n    printf(\"%d\\n\", hoy);\n    if (hoy == MARTES) {\n        printf(\"Es martes\\n\");\n    }\n    return 0;\n}\n$ clang hola.c -o hola\n$ ./hola\n1\nEs martes"
+     ]
+    },
+    {
+     "title": "Arrays 2D",
+     "text": "Un array de dos dimensiones es una tabla: `int m[filas][columnas]`. Se recorre con dos bucles `for`, uno dentro del otro.",
+     "examples": [
+      "$ cat hola.c\n#include <stdio.h>\n\nint main(void) {\n    int m[2][3] = { {1, 2, 3}, {4, 5, 6} };\n    for (int f = 0; f < 2; f++) {\n        for (int c = 0; c < 3; c++) {\n            printf(\"%d \", m[f][c]);\n        }\n        printf(\"\\n\");\n    }\n    return 0;\n}\n$ clang hola.c -o hola\n$ ./hola\n1 2 3 \n4 5 6 "
+     ]
+    },
+    {
+     "title": "Punteros y funciones",
+     "text": "En C los argumentos se pasan por copia. Si quieres que una función cambie la variable original, le pasas su dirección (`&x`) y ella la recibe como puntero (`int *p`).\n\nUn array, al pasarlo a una función, ya viaja como puntero a su primer elemento.",
+     "examples": [
+      "$ cat hola.c\n#include <stdio.h>\n\nvoid intercambiar(int *a, int *b) {\n    int tmp = *a;\n    *a = *b;\n    *b = tmp;\n}\n\nint main(void) {\n    int x = 1;\n    int y = 2;\n    intercambiar(&x, &y);\n    printf(\"%d %d\\n\", x, y);\n    return 0;\n}\n$ clang hola.c -o hola\n$ ./hola\n2 1"
+     ]
+    },
+    {
+     "title": "Punteros y arrays",
+     "text": "El nombre de un array es la dirección de su primer elemento. Por eso `*(nums + 1)` es lo mismo que `nums[1]`: sumar 1 a un puntero lo mueve al siguiente elemento.",
+     "examples": [
+      "$ cat hola.c\n#include <stdio.h>\n\nint main(void) {\n    int nums[3] = {10, 20, 30};\n    int *p = nums;\n    printf(\"%d\\n\", *p);\n    printf(\"%d\\n\", *(p + 1));\n    printf(\"%d\\n\", p[2]);\n    return 0;\n}\n$ clang hola.c -o hola\n$ ./hola\n10\n20\n30"
+     ]
+    },
+    {
+     "title": "Punteros a struct",
+     "text": "Si tienes un puntero a una `struct`, accedes a sus campos con la flecha `->` en vez del punto. `p->nota` es lo mismo que `(*p).nota`.",
+     "examples": [
+      "$ cat hola.c\n#include <stdio.h>\n\ntypedef struct {\n    char nombre[20];\n    int nota;\n} Alumno;\n\nvoid subir(Alumno *a) {\n    a->nota = a->nota + 1;\n}\n\nint main(void) {\n    Alumno a = {\"Ana\", 9};\n    subir(&a);\n    printf(\"%s: %d\\n\", a.nombre, a.nota);\n    return 0;\n}\n$ clang hola.c -o hola\n$ ./hola\nAna: 10"
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Nivel 6 · Memoria, archivos y proyectos",
+   "description": "Memoria dinámica, archivos y programas con varios archivos.",
+   "sections": [
+    {
+     "title": "malloc y free",
+     "text": "`malloc(bytes)` reserva memoria mientras el programa corre y devuelve un puntero. Siempre hay que devolverla con `free`. Si `malloc` falla, devuelve `NULL`, así que conviene revisarlo.\n\n`sizeof(int)` da cuántos bytes ocupa un tipo; multiplicarlo por la cantidad da el tamaño de un array dinámico.",
+     "examples": [
+      "$ cat hola.c\n#include <stdio.h>\n#include <stdlib.h>\n\nint main(void) {\n    int n = 3;\n    int *arr = malloc(n * sizeof(int));\n    if (arr == NULL) {\n        printf(\"Sin memoria\\n\");\n        return 1;\n    }\n    for (int i = 0; i < n; i++) {\n        arr[i] = (i + 1) * 10;\n    }\n    for (int i = 0; i < n; i++) {\n        printf(\"%d \", arr[i]);\n    }\n    printf(\"\\n\");\n    free(arr);\n    return 0;\n}\n$ clang hola.c -o hola\n$ ./hola\n10 20 30 "
+     ]
+    },
+    {
+     "title": "Archivos con fopen",
+     "text": "`fopen(nombre, modo)` abre un archivo y devuelve un puntero `FILE *`. Modos: `\"r\"` leer, `\"w\"` escribir (borra lo anterior) y `\"a\"` agregar. `fprintf` escribe como `printf`, `fgets` lee una línea y `fclose` cierra.\n\nSi no se puede abrir, `fopen` devuelve `NULL`.",
+     "examples": [
+      "$ cat hola.c\n#include <stdio.h>\n\nint main(void) {\n    FILE *f = fopen(\"notas.txt\", \"w\");\n    fprintf(f, \"Linea 1\\n\");\n    fprintf(f, \"Linea 2\\n\");\n    fclose(f);\n\n    f = fopen(\"notas.txt\", \"r\");\n    char linea[100];\n    while (fgets(linea, sizeof(linea), f) != NULL) {\n        printf(\"%s\", linea);\n    }\n    fclose(f);\n    return 0;\n}\n$ clang hola.c -o hola\n$ ./hola\nLinea 1\nLinea 2"
+     ]
+    },
+    {
+     "title": "Argumentos de main",
+     "text": "`int main(int argc, char *argv[])` recibe lo que escribes después del nombre del programa. `argc` es la cantidad (el nombre cuenta como el primero) y `argv` son los textos.",
+     "examples": [
+      "$ cat saludo.c\n#include <stdio.h>\n\nint main(int argc, char *argv[]) {\n    if (argc < 2) {\n        printf(\"Uso: ./saludo NOMBRE\\n\");\n        return 1;\n    }\n    printf(\"Hola %s\\n\", argv[1]);\n    return 0;\n}\n$ clang saludo.c -o saludo\n$ ./saludo\nUso: ./saludo NOMBRE\n$ ./saludo Ana\nHola Ana"
+     ]
+    },
+    {
+     "title": "Varios archivos (.h y .c)",
+     "text": "El `.h` (encabezado) declara qué funciones existen y el `.c` dice cómo funcionan. Quien las use hace `#include \"archivo.h\"` con comillas. Se compilan todos los `.c` juntos.\n\n`#pragma once` (o las guardas `#ifndef`) evita que un encabezado se incluya dos veces.",
+     "examples": [
+      "$ cat saludo.h\n#pragma once\n\nvoid saludar(const char *nombre);\n$ cat saludo.c\n#include <stdio.h>\n#include \"saludo.h\"\n\nvoid saludar(const char *nombre) {\n    printf(\"Hola %s\\n\", nombre);\n}\n$ cat main.c\n#include \"saludo.h\"\n\nint main(void) {\n    saludar(\"Ana\");\n    return 0;\n}\n$ clang main.c saludo.c -o app\n$ ./app\nHola Ana"
+     ]
+    },
+    {
+     "title": "#define y const",
+     "text": "`#define NOMBRE valor` hace que el preprocesador reemplace `NOMBRE` por el valor antes de compilar. Se usa para constantes y macros. `const` marca una variable que no puede cambiar y sí tiene tipo.",
+     "examples": [
+      "$ cat hola.c\n#include <stdio.h>\n\n#define MAX 3\n#define DOBLE(x) ((x) * 2)\n\nint main(void) {\n    const double PI_APROX = 3.14;\n    printf(\"%d\\n\", MAX);\n    printf(\"%d\\n\", DOBLE(4));\n    printf(\"%.2f\\n\", PI_APROX);\n    return 0;\n}\n$ clang hola.c -o hola\n$ ./hola\n3\n8\n3.14"
+     ]
+    },
+    {
+     "title": "Errores comunes",
+     "text": "• Segmentation fault: acceder a memoria que no es tuya (puntero `NULL`, posición fuera del array, usar algo ya liberado).\n• Fuga de memoria: hacer `malloc` y no `free`.\n• Desborde de buffer: guardar más caracteres de los que caben en un array.\n• Variable sin inicializar: contiene basura hasta que le asignes algo.\n\nCompilar con `-Wall` activa más avisos y ayuda a encontrarlos antes de correr.",
+     "examples": [
+      "$ cat falla.c\n#include <stdio.h>\n\nint main(void) {\n    int *p = NULL;\n    printf(\"%d\\n\", *p);\n    return 0;\n}\n$ clang -Wall falla.c -o falla\n$ ./falla\nSegmentation fault"
+     ]
+    },
+    {
+     "title": "Proyecto: promedio de notas",
+     "text": "Un programa completo que junta lo anterior: bucle `while`, `scanf`, `strcmp`, `atof` y un array.\n\nPide notas hasta que escribas `fin` y muestra el promedio con un decimal. Si no cargaste ninguna, avisa. El array tiene un tope de 100 notas.",
+     "examples": [
+      "$ cat hola.c\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\nint main(void) {\n    double notas[100];\n    int cantidad = 0;\n    char t[30];\n    while (cantidad < 100) {\n        printf(\"Nota (o 'fin'): \");\n        scanf(\"%s\", t);\n        if (strcmp(t, \"fin\") == 0) {\n            break;\n        }\n        notas[cantidad] = atof(t);\n        cantidad++;\n    }\n    if (cantidad > 0) {\n        double suma = 0;\n        for (int i = 0; i < cantidad; i++) {\n            suma += notas[i];\n        }\n        printf(\"Promedio: %.1f\\n\", suma / cantidad);\n    } else {\n        printf(\"No cargaste notas\\n\");\n    }\n    return 0;\n}\n$ clang hola.c -o hola\n$ ./hola\nNota (o 'fin'): 8\nNota (o 'fin'): 6\nNota (o 'fin'): fin\nPromedio: 7.0"
+     ]
+    }
+   ]
   }
  ],
  "guides": [

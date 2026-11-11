@@ -111,6 +111,169 @@
      ]
     }
    ]
+  },
+  {
+   "title": "Nivel 4 · Textos y colecciones",
+   "description": "Trabajar con textos y manejar mejor listas, diccionarios y conjuntos.",
+   "sections": [
+    {
+     "title": "Métodos de texto",
+     "text": "Los textos (`str`) tienen métodos propios. Se escriben con un punto después del valor: `texto.metodo()`.\n\nLos más usados: `strip()` quita espacios de los costados, `upper()` y `lower()` cambian mayúsculas, `replace(a, b)` reemplaza, `split(sep)` corta en una lista y `\"-\".join(lista)` hace lo contrario. `len()` cuenta los caracteres.",
+     "examples": [
+      "$ cat hola.py\ntexto = \"  Hola Mundo  \"\nprint(texto.strip())\nprint(texto.upper())\nprint(texto.replace(\"Mundo\", \"Python\"))\nprint(len(texto))\nprint(\"a,b,c\".split(\",\"))\nprint(\"-\".join([\"x\", \"y\", \"z\"]))\n$ python hola.py\nHola Mundo\n  HOLA MUNDO  \n  Hola Python  \n14\n['a', 'b', 'c']\nx-y-z"
+     ],
+     "note": "Los métodos de texto no modifican el original: devuelven un texto nuevo. Si lo quieres guardar, asígnalo: `texto = texto.strip()`."
+    },
+    {
+     "title": "f-strings",
+     "text": "Una f-string es un texto con una `f` delante de las comillas. Lo que pongas entre llaves `{ }` se calcula y se inserta en el texto.\n\nPuedes dar formato dentro de las llaves: `{pi:.2f}` muestra 2 decimales. Es la forma más cómoda de mezclar texto con variables.",
+     "examples": [
+      "$ cat hola.py\nnombre = \"Ana\"\nedad = 12\npi = 3.14159\nprint(f\"{nombre} tiene {edad} años\")\nprint(f\"Pi con 2 decimales: {pi:.2f}\")\nprint(f\"Suma: {2 + 3}\")\n$ python hola.py\nAna tiene 12 años\nPi con 2 decimales: 3.14\nSuma: 5"
+     ]
+    },
+    {
+     "title": "Índices y rebanadas",
+     "text": "Cada carácter de un texto tiene una posición: la primera es 0. Con números negativos cuentas desde el final (`-1` es el último).\n\nUna rebanada (slice) saca un pedazo: `texto[inicio:fin]`, donde el fin no se incluye. Si omites un lado, llega hasta el borde. `[::-1]` da vuelta el texto.",
+     "examples": [
+      "$ cat hola.py\npalabra = \"programar\"\nprint(palabra[0])\nprint(palabra[-1])\nprint(palabra[0:4])\nprint(palabra[4:])\nprint(palabra[::-1])\n$ python hola.py\np\nr\nprog\nramar\nramargorp"
+     ],
+     "note": "Las listas funcionan igual: `lista[1:3]` saca un pedazo de la lista."
+    },
+    {
+     "title": "Tuplas y conjuntos",
+     "text": "Una tupla es como una lista pero no se puede modificar. Va entre paréntesis. Sirve para datos que van juntos, como un punto `(x, y)`. Puedes \"desempaquetarla\" en varias variables.\n\nUn conjunto (`set`) guarda valores sin repetir y sin orden. Va entre llaves. Con `in` compruebas si algo está dentro.",
+     "examples": [
+      "$ cat hola.py\npunto = (3, 4)\nprint(punto[0])\nx, y = punto\nprint(x + y)\nnumeros = {1, 2, 2, 3, 3}\nprint(numeros)\nprint(2 in numeros)\n$ python hola.py\n3\n7\n{1, 2, 3}\nTrue"
+     ]
+    },
+    {
+     "title": "Comprensión de listas",
+     "text": "Es una forma corta de crear una lista a partir de otra. La estructura es `[expresión for variable in secuencia]`, y opcionalmente puedes agregar un `if` al final para filtrar.",
+     "examples": [
+      "$ cat hola.py\ncuadrados = [n * n for n in range(5)]\nprint(cuadrados)\npares = [n for n in range(10) if n % 2 == 0]\nprint(pares)\n$ python hola.py\n[0, 1, 4, 9, 16]\n[0, 2, 4, 6, 8]"
+     ]
+    },
+    {
+     "title": "Más sobre listas y diccionarios",
+     "text": "Listas: `sort()` ordena, `insert(pos, valor)` inserta en una posición, `pop()` quita y devuelve el último, `reverse()` da vuelta.\n\nDiccionarios: `.items()` te da clave y valor juntos para recorrer, y `.get(clave, valor_por_defecto)` busca sin dar error si la clave no existe.",
+     "examples": [
+      "$ cat hola.py\nnums = [5, 2, 8]\nnums.sort()\nprint(nums)\nnums.insert(0, 1)\nprint(nums)\nprint(nums.pop())\nprint(nums)\ndatos = {\"a\": 1, \"b\": 2}\nfor clave, valor in datos.items():\n    print(clave, valor)\nprint(datos.get(\"z\", 0))\n$ python hola.py\n[2, 5, 8]\n[1, 2, 5, 8]\n8\n[1, 2, 5]\na 1\nb 2\n0"
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Nivel 5 · Funciones y archivos",
+   "description": "Funciones más completas, módulos y trabajo con archivos.",
+   "sections": [
+    {
+     "title": "Parámetros por defecto y nombrados",
+     "text": "Un parámetro puede tener un valor por defecto: si no lo mandas, se usa ese. Al llamar a la función también puedes indicar el nombre del parámetro, y así el orden no importa.",
+     "examples": [
+      "$ cat hola.py\ndef saludar(nombre, saludo=\"Hola\"):\n    print(saludo, nombre)\n\nsaludar(\"Ana\")\nsaludar(\"Luis\", saludo=\"Buenas\")\n$ python hola.py\nHola Ana\nBuenas Luis"
+     ]
+    },
+    {
+     "title": "*args y **kwargs",
+     "text": "`*args` recibe cualquier cantidad de valores sueltos y los junta en una tupla. `**kwargs` recibe valores con nombre y los junta en un diccionario.\n\nSirven cuando no sabes cuántos datos te van a mandar.",
+     "examples": [
+      "$ cat hola.py\ndef sumar_todo(*numeros):\n    return sum(numeros)\n\ndef mostrar(**datos):\n    for k, v in datos.items():\n        print(k, \"=\", v)\n\nprint(sumar_todo(1, 2, 3, 4))\nmostrar(nombre=\"Ana\", edad=12)\n$ python hola.py\n10\nnombre = Ana\nedad = 12"
+     ]
+    },
+    {
+     "title": "Alcance de variables",
+     "text": "Una variable creada dentro de una función es local: solo existe ahí adentro. Si usas el mismo nombre afuera, son dos variables distintas.\n\nPara modificar una variable de afuera desde una función, hay que declararla con `global`. Aun así, conviene evitarlo y devolver valores con `return`.",
+     "examples": [
+      "$ cat hola.py\nx = 10\n\ndef cambiar():\n    x = 5\n    print(\"dentro:\", x)\n\ncambiar()\nprint(\"fuera:\", x)\n$ python hola.py\ndentro: 5\nfuera: 10"
+     ]
+    },
+    {
+     "title": "Leer y escribir archivos",
+     "text": "`open(nombre, modo)` abre un archivo. Los modos más comunes: `\"r\"` leer, `\"w\"` escribir (borra lo que había) y `\"a\"` agregar al final.\n\nUsa siempre `with`: cierra el archivo solo, aunque haya un error. Recorrer el archivo con `for` te da una línea por vuelta, con su salto de línea incluido (por eso se usa `strip()`).",
+     "examples": [
+      "$ cat hola.py\nwith open(\"notas.txt\", \"w\") as f:\n    f.write(\"Linea 1\\n\")\n    f.write(\"Linea 2\\n\")\n\nwith open(\"notas.txt\", \"r\") as f:\n    for linea in f:\n        print(linea.strip())\n$ python hola.py\nLinea 1\nLinea 2\n$ cat notas.txt\nLinea 1\nLinea 2"
+     ]
+    },
+    {
+     "title": "Módulos e import",
+     "text": "Un módulo es un archivo con código que puedes reutilizar. `import math` trae el módulo completo y lo usas como `math.sqrt()`. Con `from math import floor` traes solo lo que necesitas.\n\nPython ya incluye muchos: `math`, `random`, `json`, `os`, `sys`, `datetime`. También puedes importar tus propios archivos `.py`.",
+     "examples": [
+      "$ cat hola.py\nimport math\nprint(math.sqrt(16))\nprint(math.pi)\nfrom math import floor\nprint(floor(3.7))\n$ python hola.py\n4.0\n3.141592653589793\n3"
+     ],
+     "note": "`random.randint(1, 10)` da un entero al azar entre 1 y 10. Como cambia en cada ejecución, no tiene una salida fija."
+    },
+    {
+     "title": "break, continue y else en bucles",
+     "text": "`break` corta el bucle por completo. `continue` salta a la siguiente vuelta sin terminar la actual.",
+     "examples": [
+      "$ cat hola.py\nfor n in range(1, 10):\n    if n == 3:\n        continue\n    if n == 6:\n        break\n    print(n)\n$ python hola.py\n1\n2\n4\n5"
+     ]
+    },
+    {
+     "title": "Recursión",
+     "text": "Una función recursiva se llama a sí misma. Siempre necesita un caso base: la condición donde deja de llamarse. Sin eso, se llama infinitamente y Python da un error.",
+     "examples": [
+      "$ cat hola.py\ndef factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n\nprint(factorial(5))\n$ python hola.py\n120"
+     ]
+    },
+    {
+     "title": "raise y finally",
+     "text": "Con `raise` lanzas un error tú mismo cuando algo no es válido. `except ... as e` te deja leer el mensaje. El bloque `finally` se ejecuta siempre, haya error o no.",
+     "examples": [
+      "$ cat hola.py\ndef dividir(a, b):\n    if b == 0:\n        raise ValueError(\"No se puede dividir por cero\")\n    return a / b\n\ntry:\n    print(dividir(10, 2))\n    print(dividir(1, 0))\nexcept ValueError as e:\n    print(\"Error:\", e)\nfinally:\n    print(\"Fin\")\n$ python hola.py\n5.0\nError: No se puede dividir por cero\nFin"
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Nivel 6 · Objetos y proyectos",
+   "description": "Clases, herencia, JSON y programas completos.",
+   "sections": [
+    {
+     "title": "Clases y objetos",
+     "text": "Una clase es un molde y un objeto es lo que creas con ese molde. `__init__` es el constructor: se ejecuta al crear el objeto. `self` es el propio objeto y siempre va como primer parámetro de los métodos.",
+     "examples": [
+      "$ cat hola.py\nclass Perro:\n    def __init__(self, nombre):\n        self.nombre = nombre\n\n    def ladrar(self):\n        print(self.nombre, \"dice guau\")\n\np = Perro(\"Toby\")\np.ladrar()\nprint(p.nombre)\n$ python hola.py\nToby dice guau\nToby"
+     ]
+    },
+    {
+     "title": "Herencia",
+     "text": "Una clase puede heredar de otra: toma sus datos y métodos y puede cambiarlos. Se escribe `class Hija(Padre):`.\n\nCuando varias clases tienen el mismo método con distinto comportamiento, se llama polimorfismo: tú llamas `hablar()` y cada objeto responde a su manera.",
+     "examples": [
+      "$ cat hola.py\nclass Animal:\n    def __init__(self, nombre):\n        self.nombre = nombre\n\n    def hablar(self):\n        print(self.nombre, \"hace un sonido\")\n\nclass Gato(Animal):\n    def hablar(self):\n        print(self.nombre, \"dice miau\")\n\nfor a in [Animal(\"Bicho\"), Gato(\"Misi\")]:\n    a.hablar()\n$ python hola.py\nBicho hace un sonido\nMisi dice miau"
+     ]
+    },
+    {
+     "title": "lambda, sorted y map",
+     "text": "Una `lambda` es una función corta sin nombre: `lambda n: n * 2`. Se usa mucho junto a `sorted(lista, key=...)` para ordenar por un criterio, y `map(funcion, lista)` para aplicar algo a cada elemento.",
+     "examples": [
+      "$ cat hola.py\nnums = [3, 1, 2]\nprint(sorted(nums))\nprint(list(map(lambda n: n * 2, nums)))\nalumnos = [(\"Ana\", 9), (\"Luis\", 7)]\nprint(sorted(alumnos, key=lambda a: a[1]))\n$ python hola.py\n[1, 2, 3]\n[6, 2, 4]\n[('Luis', 7), ('Ana', 9)]"
+     ]
+    },
+    {
+     "title": "JSON",
+     "text": "JSON es un formato de texto para guardar datos y es el que usan casi todas las apps. En Python, `json.dump` guarda un diccionario en un archivo y `json.load` lo vuelve a leer.",
+     "examples": [
+      "$ cat json_demo.py\nimport json\n\ndatos = {\"nombre\": \"Ana\", \"nota\": 9}\nwith open(\"datos.json\", \"w\") as f:\n    json.dump(datos, f)\n\nwith open(\"datos.json\") as f:\n    leido = json.load(f)\nprint(leido[\"nombre\"])\n$ python json_demo.py\nAna",
+      "$ cat datos.json\n{\"nombre\": \"Ana\", \"nota\": 9}"
+     ]
+    },
+    {
+     "title": "Argumentos y __main__",
+     "text": "`sys.argv` es la lista con lo que escribes después del nombre del archivo en la terminal. El primer elemento (`argv[0]`) es el nombre del script.\n\n`if __name__ == \"__main__\":` hace que ese bloque corra solo cuando ejecutas el archivo directamente, y no cuando alguien lo importa.",
+     "examples": [
+      "$ cat saludo.py\nimport sys\n\ndef main():\n    if len(sys.argv) < 2:\n        print(\"Uso: python saludo.py NOMBRE\")\n        return\n    print(\"Hola\", sys.argv[1])\n\nif __name__ == \"__main__\":\n    main()",
+      "$ python saludo.py\nUso: python saludo.py NOMBRE\n$ python saludo.py Ana\nHola Ana"
+     ]
+    },
+    {
+     "title": "Proyecto: promedio de notas",
+     "text": "Un programa completo que junta casi todo lo anterior: función, lista, bucle `while`, `input`, conversión y f-string.\n\nPide notas hasta que escribas `fin` y muestra el promedio. Si no cargaste ninguna, avisa en vez de dividir por cero.",
+     "examples": [
+      "$ cat promedio.py\ndef promedio(notas):\n    return sum(notas) / len(notas)\n\nnotas = []\nwhile True:\n    texto = input(\"Nota (o 'fin'): \")\n    if texto == \"fin\":\n        break\n    notas.append(float(texto))\n\nif notas:\n    print(f\"Promedio: {promedio(notas):.1f}\")\nelse:\n    print(\"No cargaste notas\")\n$ python promedio.py\nNota (o 'fin'): 8\nNota (o 'fin'): 6\nNota (o 'fin'): fin\nPromedio: 7.0"
+     ]
+    }
+   ]
   }
  ],
  "guides": [

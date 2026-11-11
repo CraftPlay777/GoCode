@@ -112,6 +112,168 @@
      ]
     }
    ]
+  },
+  {
+   "title": "Nivel 4 · Textos, switch y Math",
+   "description": "Más herramientas del día a día: textos, selección múltiple y matemáticas.",
+   "sections": [
+    {
+     "title": "Métodos de String",
+     "text": "Los textos (`String`) son objetos y tienen métodos. Los más usados: `length()`, `trim()` (quita espacios de los costados), `toUpperCase()`, `toLowerCase()`, `substring(inicio, fin)`, `charAt(pos)`, `indexOf(texto)`, `replace(a, b)` y `split(separador)`.\n\nLas posiciones empiezan en 0 y el fin de `substring` no se incluye.",
+     "examples": [
+      "$ cat Main.java\npublic class Main {\n    public static void main(String[] args) {\n        String t = \"  Hola Mundo  \";\n        System.out.println(t.trim());\n        System.out.println(t.trim().length());\n        System.out.println(t.toUpperCase());\n        System.out.println(\"programar\".substring(0, 4));\n        System.out.println(\"programar\".charAt(2));\n        System.out.println(\"programar\".indexOf(\"g\"));\n        System.out.println(\"a,b,c\".split(\",\").length);\n    }\n}\n$ javac Main.java\n$ java Main\nHola Mundo\n10\n  HOLA MUNDO  \nprog\no\n3\n3"
+     ],
+     "note": "Los `String` no se pueden modificar: cada método devuelve un texto nuevo. Si lo quieres guardar, asígnalo: `t = t.trim();`."
+    },
+    {
+     "title": "switch",
+     "text": "`switch` elige entre varios casos según el valor de una variable. Es más cómodo que muchos `else if` cuando comparas contra valores fijos.\n\nCada `case` termina con `break`; `default` se ejecuta si ningún caso coincide.",
+     "examples": [
+      "$ cat Main.java\npublic class Main {\n    public static void main(String[] args) {\n        int dia = 3;\n        switch (dia) {\n            case 1:\n                System.out.println(\"Lunes\");\n                break;\n            case 2:\n                System.out.println(\"Martes\");\n                break;\n            case 3:\n                System.out.println(\"Miércoles\");\n                break;\n            default:\n                System.out.println(\"Otro día\");\n        }\n    }\n}\n$ javac Main.java\n$ java Main\nMiércoles"
+     ],
+     "note": "Si te olvidas el `break`, Java sigue ejecutando los casos de abajo aunque no coincidan (se llama fall-through)."
+    },
+    {
+     "title": "Ternario y asignaciones compuestas",
+     "text": "El operador ternario `condicion ? valorSi : valorNo` es un `if` en una sola línea que devuelve un valor.\n\nLas asignaciones compuestas acortan cuentas: `x += 5` es `x = x + 5`. Existen `-=`, `*=`, `/=` y `%=`. `x++` suma 1 y `x--` resta 1.",
+     "examples": [
+      "$ cat Main.java\npublic class Main {\n    public static void main(String[] args) {\n        int edad = 15;\n        String tipo = (edad >= 18) ? \"adulto\" : \"menor\";\n        System.out.println(tipo);\n        int total = 10;\n        total += 5;\n        total *= 2;\n        System.out.println(total);\n        int i = 5;\n        i++;\n        System.out.println(i);\n    }\n}\n$ javac Main.java\n$ java Main\nmenor\n30\n6"
+     ]
+    },
+    {
+     "title": "Math",
+     "text": "La clase `Math` trae funciones matemáticas listas, sin crear objetos: `Math.sqrt()`, `Math.pow(base, exponente)`, `Math.max()`, `Math.min()`, `Math.round()`, `Math.abs()`, `Math.PI`.\n\nPara números al azar se usa `Math.random()`, que da un decimal entre 0 y 1. Como cambia cada vez, no tiene una salida fija.",
+     "examples": [
+      "$ cat Main.java\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println(Math.sqrt(16));\n        System.out.println(Math.pow(2, 3));\n        System.out.println(Math.max(4, 9));\n        System.out.println(Math.round(3.6));\n        System.out.println(Math.abs(-5));\n    }\n}\n$ javac Main.java\n$ java Main\n4.0\n8.0\n9\n4\n5"
+     ],
+     "note": "Un entero al azar entre 0 y 9: `int n = (int) (Math.random() * 10);`"
+    },
+    {
+     "title": "Conversión de tipos",
+     "text": "Para pasar de un tipo a otro se usa un casting: `(int) 7.9` corta los decimales (no redondea). Para convertir texto a número: `Integer.parseInt()` y `Double.parseDouble()`. Para pasar a texto: `String.valueOf()`.\n\nSi el texto no es un número válido, Java lanza `NumberFormatException`.",
+     "examples": [
+      "$ cat Main.java\npublic class Main {\n    public static void main(String[] args) {\n        double d = 7.9;\n        int n = (int) d;\n        System.out.println(n);\n        int a = Integer.parseInt(\"42\");\n        double b = Double.parseDouble(\"3.5\");\n        System.out.println(a + 1);\n        System.out.println(b * 2);\n        String s = String.valueOf(99);\n        System.out.println(s + \"!\");\n    }\n}\n$ javac Main.java\n$ java Main\n7\n43\n7.0\n99!"
+     ]
+    },
+    {
+     "title": "for-each, break, continue y do-while",
+     "text": "El `for-each` recorre un array o lista sin usar índices: `for (int n : nums)`. `break` corta el bucle y `continue` salta a la siguiente vuelta.\n\n`do-while` es como `while`, pero revisa la condición al final, así que el bloque se ejecuta al menos una vez.",
+     "examples": [
+      "$ cat Main.java\npublic class Main {\n    public static void main(String[] args) {\n        int[] nums = {1, 2, 3, 4, 5};\n        for (int n : nums) {\n            if (n == 2) continue;\n            if (n == 5) break;\n            System.out.println(n);\n        }\n        int k = 0;\n        do {\n            System.out.println(\"k = \" + k);\n            k++;\n        } while (k < 2);\n    }\n}\n$ javac Main.java\n$ java Main\n1\n3\n4\nk = 0\nk = 1"
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Nivel 5 · Programación orientada a objetos",
+   "description": "Clases, objetos, herencia e interfaces: el corazón de Java.",
+   "sections": [
+    {
+     "title": "Clases y objetos",
+     "text": "Una clase es un molde y un objeto es lo que creas con ese molde usando `new`. La clase define datos (atributos) y acciones (métodos).\n\nEn un mismo archivo puede haber varias clases, pero solo una `public`, y debe llamarse igual que el archivo.",
+     "examples": [
+      "$ cat Main.java\nclass Perro {\n    String nombre;\n\n    void ladrar() {\n        System.out.println(nombre + \" dice guau\");\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Perro p = new Perro();\n        p.nombre = \"Toby\";\n        p.ladrar();\n    }\n}\n$ javac Main.java\n$ java Main\nToby dice guau"
+     ]
+    },
+    {
+     "title": "Constructores",
+     "text": "Un constructor es un método especial que se ejecuta al crear el objeto con `new`. Se llama igual que la clase y no devuelve nada. Sirve para dejar el objeto listo desde el inicio.\n\n`this` es el propio objeto: `this.nombre = nombre;` guarda el parámetro en el atributo.",
+     "examples": [
+      "$ cat Main.java\nclass Perro {\n    String nombre;\n    int edad;\n\n    Perro(String nombre, int edad) {\n        this.nombre = nombre;\n        this.edad = edad;\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Perro p = new Perro(\"Toby\", 3);\n        System.out.println(p.nombre + \" \" + p.edad);\n    }\n}\n$ javac Main.java\n$ java Main\nToby 3"
+     ]
+    },
+    {
+     "title": "Encapsulamiento",
+     "text": "Los atributos se marcan `private` para que nadie los cambie desde afuera de forma incorrecta. Se accede a ellos con métodos: los \"getters\" leen y los \"setters\" (u otros métodos) modifican, con sus controles.\n\nAsí la clase protege sus propias reglas, como que un saldo no pueda recibir un depósito negativo.",
+     "examples": [
+      "$ cat Main.java\nclass Cuenta {\n    private double saldo;\n\n    void depositar(double monto) {\n        if (monto > 0) {\n            saldo += monto;\n        }\n    }\n\n    double getSaldo() {\n        return saldo;\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Cuenta c = new Cuenta();\n        c.depositar(100);\n        c.depositar(-5);\n        System.out.println(c.getSaldo());\n    }\n}\n$ javac Main.java\n$ java Main\n100.0"
+     ]
+    },
+    {
+     "title": "static y final",
+     "text": "Un atributo `static` pertenece a la clase, no a cada objeto: todos los objetos comparten el mismo. Sirve, por ejemplo, para contar cuántos objetos se crearon.\n\n`final` hace que un valor no pueda cambiar después de asignado. Para constantes se suele escribir el nombre en mayúsculas.",
+     "examples": [
+      "$ cat Main.java\nclass Contador {\n    static int total = 0;\n\n    Contador() {\n        total++;\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        new Contador();\n        new Contador();\n        new Contador();\n        System.out.println(Contador.total);\n        final int MAX = 10;\n        System.out.println(MAX);\n    }\n}\n$ javac Main.java\n$ java Main\n3\n10"
+     ]
+    },
+    {
+     "title": "Herencia y super",
+     "text": "Con `extends` una clase hereda atributos y métodos de otra. Con `super(...)` llamas al constructor de la clase padre. `@Override` indica que estás reemplazando un método del padre.\n\nUna variable del tipo padre puede guardar un objeto hijo, y al llamar un método se ejecuta la versión del hijo. Eso es polimorfismo.",
+     "examples": [
+      "$ cat Main.java\nclass Animal {\n    String nombre;\n\n    Animal(String nombre) {\n        this.nombre = nombre;\n    }\n\n    void hablar() {\n        System.out.println(nombre + \" hace un sonido\");\n    }\n}\n\nclass Gato extends Animal {\n    Gato(String nombre) {\n        super(nombre);\n    }\n\n    @Override\n    void hablar() {\n        System.out.println(nombre + \" dice miau\");\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Animal a = new Animal(\"Bicho\");\n        Animal g = new Gato(\"Misi\");\n        a.hablar();\n        g.hablar();\n    }\n}\n$ javac Main.java\n$ java Main\nBicho hace un sonido\nMisi dice miau"
+     ]
+    },
+    {
+     "title": "Interfaces",
+     "text": "Una interfaz es un contrato: lista métodos que las clases que la implementan están obligadas a tener, sin decir cómo. Se declara con `interface` y se usa con `implements`.\n\nLos métodos de una interfaz son públicos, por eso al implementarlos hay que escribir `public`.",
+     "examples": [
+      "$ cat Main.java\ninterface Figura {\n    double area();\n}\n\nclass Cuadrado implements Figura {\n    double lado;\n\n    Cuadrado(double lado) {\n        this.lado = lado;\n    }\n\n    public double area() {\n        return lado * lado;\n    }\n}\n\nclass Circulo implements Figura {\n    double radio;\n\n    Circulo(double radio) {\n        this.radio = radio;\n    }\n\n    public double area() {\n        return Math.PI * radio * radio;\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Figura[] figuras = { new Cuadrado(2), new Circulo(1) };\n        for (Figura f : figuras) {\n            System.out.printf(\"%.2f%n\", f.area());\n        }\n    }\n}\n$ javac Main.java\n$ java Main\n4.00\n3.14"
+     ]
+    },
+    {
+     "title": "toString",
+     "text": "Cuando imprimes un objeto, Java muestra algo poco útil (el nombre de la clase y un código). Si defines el método `toString()`, `println` lo usa para mostrar el objeto como tú quieras.",
+     "examples": [
+      "$ cat Main.java\nclass Punto {\n    int x;\n    int y;\n\n    Punto(int x, int y) {\n        this.x = x;\n        this.y = y;\n    }\n\n    @Override\n    public String toString() {\n        return \"(\" + x + \", \" + y + \")\";\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Punto p = new Punto(2, 3);\n        System.out.println(p);\n    }\n}\n$ javac Main.java\n$ java Main\n(2, 3)"
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Nivel 6 · Colecciones, errores y archivos",
+   "description": "Estructuras de datos, manejo de errores y un programa completo.",
+   "sections": [
+    {
+     "title": "HashMap",
+     "text": "Un `HashMap` guarda pares clave → valor, como un diccionario. Se declara con los dos tipos entre `< >`. Métodos: `put` agrega o reemplaza, `get` busca, `containsKey` pregunta si existe una clave y `size` cuenta.",
+     "examples": [
+      "$ cat Main.java\nimport java.util.HashMap;\n\npublic class Main {\n    public static void main(String[] args) {\n        HashMap<String, Integer> notas = new HashMap<>();\n        notas.put(\"Ana\", 9);\n        notas.put(\"Luis\", 7);\n        System.out.println(notas.get(\"Ana\"));\n        System.out.println(notas.containsKey(\"Pedro\"));\n        notas.put(\"Ana\", 10);\n        System.out.println(notas.get(\"Ana\"));\n        System.out.println(notas.size());\n    }\n}\n$ javac Main.java\n$ java Main\n9\nfalse\n10\n2"
+     ],
+     "note": "Un `HashMap` no garantiza el orden al recorrerlo. Si necesitas orden de inserción, usa `LinkedHashMap`."
+    },
+    {
+     "title": "Ordenar y quitar en listas",
+     "text": "`Collections.sort(lista)` ordena una lista. `remove` con un número quita por posición; para quitar un valor entero hay que usar `remove(Integer.valueOf(valor))`.",
+     "examples": [
+      "$ cat Main.java\nimport java.util.ArrayList;\nimport java.util.Collections;\n\npublic class Main {\n    public static void main(String[] args) {\n        ArrayList<Integer> nums = new ArrayList<>();\n        nums.add(5);\n        nums.add(2);\n        nums.add(8);\n        Collections.sort(nums);\n        for (int n : nums) {\n            System.out.println(n);\n        }\n        nums.remove(Integer.valueOf(5));\n        System.out.println(nums);\n    }\n}\n$ javac Main.java\n$ java Main\n2\n5\n8\n[2, 8]"
+     ]
+    },
+    {
+     "title": "throw, finally y errores propios",
+     "text": "Con `throw new ...` lanzas un error cuando algo no es válido. El bloque `finally` se ejecuta siempre, haya error o no, y se usa para cerrar o limpiar cosas.\n\nCon `e.getMessage()` lees el mensaje del error.",
+     "examples": [
+      "$ cat Main.java\nclass Util {\n    static double dividir(int a, int b) {\n        if (b == 0) {\n            throw new IllegalArgumentException(\"No se puede dividir por cero\");\n        }\n        return (double) a / b;\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        try {\n            System.out.println(Util.dividir(10, 2));\n            System.out.println(Util.dividir(1, 0));\n        } catch (IllegalArgumentException e) {\n            System.out.println(\"Error: \" + e.getMessage());\n        } finally {\n            System.out.println(\"Fin\");\n        }\n    }\n}\n$ javac Main.java\n$ java Main\n5.0\nError: No se puede dividir por cero\nFin"
+     ]
+    },
+    {
+     "title": "Leer y escribir archivos",
+     "text": "Con `Files` (Java 11 o superior) se escribe y se lee un archivo en pocas líneas. Estas operaciones pueden fallar (archivo inexistente, sin permiso), por eso el método `main` declara `throws IOException`.",
+     "examples": [
+      "$ cat Main.java\nimport java.io.IOException;\nimport java.nio.file.Files;\nimport java.nio.file.Path;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) throws IOException {\n        Path ruta = Path.of(\"notas.txt\");\n        Files.writeString(ruta, \"Linea 1\\nLinea 2\\n\");\n        List<String> lineas = Files.readAllLines(ruta);\n        for (String l : lineas) {\n            System.out.println(l);\n        }\n    }\n}\n$ javac Main.java\n$ java Main\nLinea 1\nLinea 2"
+     ]
+    },
+    {
+     "title": "enum",
+     "text": "Un `enum` es un tipo con un conjunto fijo de valores posibles, como los días o los estados de un juego. `values()` devuelve todos y `ordinal()` da la posición de cada uno.",
+     "examples": [
+      "$ cat Main.java\nenum Dia {\n    LUNES, MARTES, MIERCOLES\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Dia d = Dia.MARTES;\n        System.out.println(d);\n        for (Dia x : Dia.values()) {\n            System.out.println(x.ordinal() + \" \" + x);\n        }\n    }\n}\n$ javac Main.java\n$ java Main\nMARTES\n0 LUNES\n1 MARTES\n2 MIERCOLES"
+     ]
+    },
+    {
+     "title": "Argumentos de main",
+     "text": "El parámetro `String[] args` de `main` guarda lo que escribes después de `java Main` en la terminal. Si no mandas nada, `args.length` es 0.",
+     "examples": [
+      "$ cat Main.java\npublic class Main {\n    public static void main(String[] args) {\n        if (args.length == 0) {\n            System.out.println(\"Uso: java Main NOMBRE\");\n            return;\n        }\n        System.out.println(\"Hola \" + args[0]);\n    }\n}\n$ javac Main.java\n$ java Main\nUso: java Main NOMBRE\n$ java Main Ana\nHola Ana"
+     ]
+    },
+    {
+     "title": "Proyecto: promedio de notas",
+     "text": "Un programa completo que junta lo anterior: `Scanner`, `ArrayList`, bucle `while`, conversión y `printf`.\n\nPide notas hasta que escribas `fin` y muestra el promedio. Si no cargaste ninguna, avisa.",
+     "examples": [
+      "$ cat Main.java\nimport java.util.ArrayList;\nimport java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        ArrayList<Double> notas = new ArrayList<>();\n        while (true) {\n            System.out.print(\"Nota (o 'fin'): \");\n            String t = sc.nextLine();\n            if (t.equals(\"fin\")) {\n                break;\n            }\n            notas.add(Double.parseDouble(t));\n        }\n        if (notas.size() > 0) {\n            double suma = 0;\n            for (double n : notas) {\n                suma += n;\n            }\n            System.out.printf(\"Promedio: %.1f%n\", suma / notas.size());\n        } else {\n            System.out.println(\"No cargaste notas\");\n        }\n    }\n}\n$ javac Main.java\n$ java Main\nNota (o 'fin'): 8\nNota (o 'fin'): 6\nNota (o 'fin'): fin\nPromedio: 7.0"
+     ]
+    }
+   ]
   }
  ],
  "guides": [

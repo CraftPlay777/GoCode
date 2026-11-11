@@ -113,6 +113,173 @@
      ]
     }
    ]
+  },
+  {
+   "title": "Nivel 4 · Textos y herramientas",
+   "description": "Más control sobre los textos y herramientas del día a día.",
+   "sections": [
+    {
+     "title": "Métodos de string",
+     "text": "Un `string` tiene métodos que se llaman con un punto: `length()` (o `size()`), `substr(inicio, cantidad)`, `find(texto)` (devuelve la posición), `append()` para agregar al final, y puedes acceder a cada carácter con `t[pos]`.\n\nLos textos se comparan con `==` directamente, a diferencia de C.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\n#include <string>\nusing namespace std;\n\nint main() {\n    string t = \"Hola Mundo\";\n    cout << t.length() << endl;\n    cout << t.substr(0, 4) << endl;\n    cout << t.find(\"Mundo\") << endl;\n    t.append(\"!\");\n    cout << t << endl;\n    cout << (t == \"Hola Mundo!\") << endl;\n    t[0] = 'h';\n    cout << t << endl;\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\n10\nHola\n5\nHola Mundo!\n1\nhola Mundo!"
+     ]
+    },
+    {
+     "title": "getline",
+     "text": "`cin >> texto` corta en el primer espacio. Para leer una línea completa, con espacios, se usa `getline(cin, texto)`.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\n#include <string>\nusing namespace std;\n\nint main() {\n    string nombre;\n    cout << \"Nombre completo: \";\n    getline(cin, nombre);\n    cout << \"Hola \" << nombre << endl;\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\nNombre completo: Ana Maria\nHola Ana Maria"
+     ],
+     "note": "Si usas `cin >> numero` y luego `getline`, el Enter queda pendiente y `getline` lee una línea vacía. Pon `cin.ignore();` en el medio."
+    },
+    {
+     "title": "switch",
+     "text": "`switch` elige entre varios casos según el valor de una variable (entero o carácter). Cada `case` termina con `break`; `default` se ejecuta si ningún caso coincide.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\nusing namespace std;\n\nint main() {\n    int dia = 3;\n    switch (dia) {\n        case 1:\n            cout << \"Lunes\" << endl;\n            break;\n        case 2:\n            cout << \"Martes\" << endl;\n            break;\n        case 3:\n            cout << \"Miércoles\" << endl;\n            break;\n        default:\n            cout << \"Otro día\" << endl;\n    }\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\nMiércoles"
+     ],
+     "note": "Sin `break`, C++ sigue ejecutando los casos de abajo aunque no coincidan (fall-through)."
+    },
+    {
+     "title": "Ternario y asignaciones compuestas",
+     "text": "El operador ternario `condicion ? valorSi : valorNo` es un `if` en una línea que devuelve un valor.\n\n`x += 5` es `x = x + 5`. Existen `-=`, `*=`, `/=` y `%=`. `x++` suma 1 y `x--` resta 1.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\n#include <string>\nusing namespace std;\n\nint main() {\n    int edad = 15;\n    string tipo = (edad >= 18) ? \"adulto\" : \"menor\";\n    cout << tipo << endl;\n    int total = 10;\n    total += 5;\n    total *= 2;\n    cout << total << endl;\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\nmenor\n30"
+     ]
+    },
+    {
+     "title": "cmath y conversiones",
+     "text": "`#include <cmath>` trae funciones matemáticas: `sqrt`, `pow`, `abs`, `round`, `ceil` (redondea para arriba) y `floor` (para abajo).\n\nPara convertir: `static_cast<int>(7.9)` corta decimales, `stoi(\"42\")` pasa texto a entero, `stod(\"3.5\")` a decimal y `to_string(99)` pasa un número a texto.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\n#include <string>\n#include <cmath>\nusing namespace std;\n\nint main() {\n    cout << sqrt(16) << endl;\n    cout << pow(2, 3) << endl;\n    cout << round(3.6) << endl;\n    cout << ceil(2.1) << \" \" << floor(2.9) << endl;\n    cout << static_cast<int>(7.9) << endl;\n    cout << stoi(\"42\") + 1 << endl;\n    cout << stod(\"3.5\") * 2 << endl;\n    cout << to_string(99) + \"!\" << endl;\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\n4\n8\n4\n3 2\n7\n43\n7\n99!"
+     ]
+    },
+    {
+     "title": "do-while, break, continue y range-for",
+     "text": "`do-while` revisa la condición al final, así que el bloque corre al menos una vez. `break` corta el bucle y `continue` salta a la siguiente vuelta.\n\nEl `for` por rango `for (int n : nums)` recorre un array o vector sin usar índices.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\nusing namespace std;\n\nint main() {\n    int nums[5] = {1, 2, 3, 4, 5};\n    for (int n : nums) {\n        if (n == 2) continue;\n        if (n == 5) break;\n        cout << n << endl;\n    }\n    int k = 0;\n    do {\n        cout << \"k = \" << k << endl;\n        k++;\n    } while (k < 2);\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\n1\n3\n4\nk = 0\nk = 1"
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Nivel 5 · Clases y objetos",
+   "description": "Programación orientada a objetos en C++.",
+   "sections": [
+    {
+     "title": "Clases y objetos",
+     "text": "Una clase es un molde y un objeto es lo que creas con él. Define datos (atributos) y acciones (métodos). Con `public:` lo que viene después se puede usar desde afuera.\n\nLa llave que cierra la clase lleva `;` al final. Es de los errores más comunes al empezar.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\n#include <string>\nusing namespace std;\n\nclass Perro {\npublic:\n    string nombre;\n\n    void ladrar() {\n        cout << nombre << \" dice guau\" << endl;\n    }\n};\n\nint main() {\n    Perro p;\n    p.nombre = \"Toby\";\n    p.ladrar();\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\nToby dice guau"
+     ]
+    },
+    {
+     "title": "Constructores",
+     "text": "El constructor se ejecuta al crear el objeto, se llama igual que la clase y no devuelve nada. Con la lista de inicialización (`: nombre(n), edad(e)`) se asignan los atributos de forma directa.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\n#include <string>\nusing namespace std;\n\nclass Perro {\npublic:\n    string nombre;\n    int edad;\n\n    Perro(string n, int e) : nombre(n), edad(e) {}\n};\n\nint main() {\n    Perro p(\"Toby\", 3);\n    cout << p.nombre << \" \" << p.edad << endl;\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\nToby 3"
+     ]
+    },
+    {
+     "title": "public y private",
+     "text": "Lo que está en `private:` solo se puede usar dentro de la propia clase. Así proteges los datos y obligas a usarlos con métodos que revisan las reglas (por ejemplo, que un saldo no reciba depósitos negativos).\n\nPor defecto, en una `class` todo es privado.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\n#include <string>\nusing namespace std;\n\nclass Cuenta {\nprivate:\n    double saldo = 0;\n\npublic:\n    void depositar(double monto) {\n        if (monto > 0) {\n            saldo += monto;\n        }\n    }\n\n    double getSaldo() {\n        return saldo;\n    }\n};\n\nint main() {\n    Cuenta c;\n    c.depositar(100);\n    c.depositar(-5);\n    cout << c.getSaldo() << endl;\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\n100"
+     ]
+    },
+    {
+     "title": "Herencia",
+     "text": "`class Gato : public Animal` hace que `Gato` herede de `Animal`. El hijo tiene los datos y métodos del padre y puede agregar o cambiar los suyos.\n\nEl constructor del hijo llama al del padre en la lista de inicialización.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\n#include <string>\nusing namespace std;\n\nclass Animal {\npublic:\n    string nombre;\n\n    Animal(string n) : nombre(n) {}\n\n    void hablar() {\n        cout << nombre << \" hace un sonido\" << endl;\n    }\n};\n\nclass Gato : public Animal {\npublic:\n    Gato(string n) : Animal(n) {}\n\n    void maullar() {\n        cout << nombre << \" dice miau\" << endl;\n    }\n};\n\nint main() {\n    Gato g(\"Misi\");\n    g.hablar();\n    g.maullar();\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\nMisi hace un sonido\nMisi dice miau"
+     ]
+    },
+    {
+     "title": "virtual y polimorfismo",
+     "text": "Si un método del padre se marca `virtual`, al llamarlo a través de un puntero al padre se ejecuta la versión del hijo. Eso es polimorfismo.\n\nCuando una clase tiene métodos `virtual`, conviene que su destructor también sea `virtual`.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\n#include <string>\nusing namespace std;\n\nclass Animal {\npublic:\n    virtual void hablar() {\n        cout << \"Sonido\" << endl;\n    }\n    virtual ~Animal() {}\n};\n\nclass Perro : public Animal {\npublic:\n    void hablar() override {\n        cout << \"Guau\" << endl;\n    }\n};\n\nclass Gato : public Animal {\npublic:\n    void hablar() override {\n        cout << \"Miau\" << endl;\n    }\n};\n\nint main() {\n    Animal *lista[2] = { new Perro(), new Gato() };\n    for (int i = 0; i < 2; i++) {\n        lista[i]->hablar();\n        delete lista[i];\n    }\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\nGuau\nMiau"
+     ]
+    },
+    {
+     "title": "Sobrecarga y valores por defecto",
+     "text": "Puedes tener varias funciones con el mismo nombre si reciben parámetros distintos (sobrecarga). C++ elige la correcta según lo que le pases.\n\nUn parámetro también puede tener un valor por defecto, que se usa si no lo mandas.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\nusing namespace std;\n\nint sumar(int a, int b) {\n    return a + b;\n}\n\ndouble sumar(double a, double b) {\n    return a + b;\n}\n\nvoid saludar(string nombre = \"mundo\") {\n    cout << \"Hola \" << nombre << endl;\n}\n\nint main() {\n    cout << sumar(2, 3) << endl;\n    cout << sumar(1.5, 2.5) << endl;\n    saludar();\n    saludar(\"Ana\");\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\n5\n4\nHola mundo\nHola Ana"
+     ]
+    },
+    {
+     "title": "Varios archivos (.h y .cpp)",
+     "text": "En proyectos reales el código se reparte en archivos. El `.h` (encabezado) declara qué existe y el `.cpp` dice cómo funciona. Quien lo use hace `#include \"archivo.h\"` con comillas.\n\nSe compilan todos los `.cpp` juntos. El `#pragma once` evita que un encabezado se incluya dos veces.",
+     "examples": [
+      "$ cat saludo.h\n#pragma once\n#include <string>\n\nvoid saludar(std::string nombre);\n$ cat saludo.cpp\n#include <iostream>\n#include \"saludo.h\"\n\nvoid saludar(std::string nombre) {\n    std::cout << \"Hola \" << nombre << std::endl;\n}\n$ cat main.cpp\n#include \"saludo.h\"\n\nint main() {\n    saludar(\"Ana\");\n    return 0;\n}\n$ clang++ main.cpp saludo.cpp -o app\n$ ./app\nHola Ana"
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Nivel 6 · Memoria y librerías",
+   "description": "Referencias, memoria dinámica, la STL y un programa completo.",
+   "sections": [
+    {
+     "title": "Referencias",
+     "text": "Una referencia (`&`) es otro nombre para la misma variable. Si una función recibe `int &n`, no trabaja con una copia: modifica la variable original.\n\nEs la forma habitual de pasar datos grandes sin copiarlos y de modificar los argumentos.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\nusing namespace std;\n\nvoid duplicar(int &n) {\n    n = n * 2;\n}\n\nint main() {\n    int x = 5;\n    duplicar(x);\n    cout << x << endl;\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\n10"
+     ]
+    },
+    {
+     "title": "new y delete",
+     "text": "`new` reserva memoria mientras el programa corre y devuelve un puntero. Esa memoria no se libera sola: debes devolverla con `delete` (o `delete[]` si es un array).\n\nSi te olvidas, hay una fuga de memoria. Si la usas después de liberarla, el programa puede fallar.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\nusing namespace std;\n\nint main() {\n    int *p = new int(7);\n    cout << *p << endl;\n    *p = 9;\n    cout << *p << endl;\n    delete p;\n\n    int *arr = new int[3]{1, 2, 3};\n    for (int i = 0; i < 3; i++) {\n        cout << arr[i] << \" \";\n    }\n    cout << endl;\n    delete[] arr;\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\n7\n9\n1 2 3 "
+     ]
+    },
+    {
+     "title": "map",
+     "text": "Un `map` guarda pares clave → valor, ordenados por clave. Se declara con los dos tipos: `map<string, int>`. Con `mapa[clave]` lees o agregas, y al recorrerlo cada elemento tiene `first` (clave) y `second` (valor).",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\n#include <map>\n#include <string>\nusing namespace std;\n\nint main() {\n    map<string, int> notas;\n    notas[\"Luis\"] = 7;\n    notas[\"Ana\"] = 9;\n    cout << notas[\"Ana\"] << endl;\n    for (auto &par : notas) {\n        cout << par.first << \" \" << par.second << endl;\n    }\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\n9\nAna 9\nLuis 7"
+     ]
+    },
+    {
+     "title": "Algoritmos de la STL",
+     "text": "`#include <algorithm>` trae funciones listas para contenedores: `sort`, `reverse`, `count`, `find`... Reciben un rango con `begin()` y `end()`.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\n#include <vector>\n#include <algorithm>\nusing namespace std;\n\nint main() {\n    vector<int> v = {5, 2, 8, 1};\n    sort(v.begin(), v.end());\n    for (int n : v) {\n        cout << n << \" \";\n    }\n    cout << endl;\n    reverse(v.begin(), v.end());\n    cout << v[0] << endl;\n    cout << count(v.begin(), v.end(), 2) << endl;\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\n1 2 5 8 \n8\n1"
+     ]
+    },
+    {
+     "title": "Archivos con fstream",
+     "text": "`ofstream` escribe en un archivo y `ifstream` lo lee. Se usan igual que `cout` y `cin`. Con `getline` lees línea por línea.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\n#include <fstream>\n#include <string>\nusing namespace std;\n\nint main() {\n    ofstream salida(\"notas.txt\");\n    salida << \"Linea 1\\n\";\n    salida << \"Linea 2\\n\";\n    salida.close();\n\n    ifstream entrada(\"notas.txt\");\n    string linea;\n    while (getline(entrada, linea)) {\n        cout << linea << endl;\n    }\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\nLinea 1\nLinea 2"
+     ]
+    },
+    {
+     "title": "Excepciones",
+     "text": "Con `throw` lanzas un error y con `try` / `catch` lo atrapas. `e.what()` da el mensaje. Las excepciones estándar están en `<stdexcept>`.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\n#include <stdexcept>\nusing namespace std;\n\nint main() {\n    try {\n        int b = 0;\n        if (b == 0) {\n            throw runtime_error(\"No se puede dividir por cero\");\n        }\n        cout << 10 / b << endl;\n    } catch (const exception &e) {\n        cout << \"Error: \" << e.what() << endl;\n    }\n    cout << \"Sigo funcionando\" << endl;\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\nError: No se puede dividir por cero\nSigo funcionando"
+     ]
+    },
+    {
+     "title": "Argumentos de main",
+     "text": "`int main(int argc, char *argv[])` recibe lo que escribes después del nombre del programa. `argc` es la cantidad (el nombre cuenta como el primero) y `argv` son los textos.",
+     "examples": [
+      "$ cat saludo.cpp\n#include <iostream>\nusing namespace std;\n\nint main(int argc, char *argv[]) {\n    if (argc < 2) {\n        cout << \"Uso: ./saludo NOMBRE\" << endl;\n        return 1;\n    }\n    cout << \"Hola \" << argv[1] << endl;\n    return 0;\n}\n$ clang++ saludo.cpp -o saludo\n$ ./saludo\nUso: ./saludo NOMBRE\n$ ./saludo Ana\nHola Ana"
+     ]
+    },
+    {
+     "title": "Proyecto: promedio de notas",
+     "text": "Un programa completo que junta lo anterior: `vector`, bucle `while`, conversión con `stod` y formato con `setprecision`.\n\nPide notas hasta que escribas `fin` y muestra el promedio con un decimal. Si no cargaste ninguna, avisa.",
+     "examples": [
+      "$ cat hola.cpp\n#include <iostream>\n#include <vector>\n#include <string>\n#include <iomanip>\nusing namespace std;\n\nint main() {\n    vector<double> notas;\n    string t;\n    while (true) {\n        cout << \"Nota (o 'fin'): \";\n        cin >> t;\n        if (t == \"fin\") {\n            break;\n        }\n        notas.push_back(stod(t));\n    }\n    if (notas.size() > 0) {\n        double suma = 0;\n        for (double n : notas) {\n            suma += n;\n        }\n        cout << fixed << setprecision(1);\n        cout << \"Promedio: \" << suma / notas.size() << endl;\n    } else {\n        cout << \"No cargaste notas\" << endl;\n    }\n    return 0;\n}\n$ clang++ hola.cpp -o hola\n$ ./hola\nNota (o 'fin'): 8\nNota (o 'fin'): 6\nNota (o 'fin'): fin\nPromedio: 7.0"
+     ]
+    }
+   ]
   }
  ],
  "guides": [
